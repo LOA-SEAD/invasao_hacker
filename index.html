@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8" />
+
+        <title>Invasão Hacker</title>
+        <link href="invasao_hacker/css/bootstrap.min.css" type="text/css" rel="Stylesheet" />
+        <link href="invasao_hacker/css/style.css" type="text/css" rel="Stylesheet" />
+
+        <script data-main="invasao_hacker/scripts/main" src="invasao_hacker/scripts/libs/require.js"></script>
+    </head>
+    <body>
+        <div id="tela-jogo">
+            <div class="navbar navbar-fixed-bottom navbar-inverse">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </a>
+                        <a class="brand">Invasão <span lang="en">Hacker</span></a>
+                        <div class="nav-collapse collapse">
+                            <ul id="os-init-bar" class="nav">
+                                <li class="dropdown">
+                                    <a role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="icon-th icon-white"></i> Iniciar
+                                    </a>
+                                    <ul id="lst-programas" class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                                        <li class="nav-header">Menu inicial</li>
+                                        <li id="bt-blocoNotas" class="itemInic"><a href="#"><i class="icon-pencil"></i> Bloco de notas</a></li>
+                                        <li id="bt-calc"       class="itemInic"><a href="#"><i class="icon-tasks"></i> calculadora    </a></li>
+                                        <li id="bt-email"      class="itemInic"><a href="#"><i class="icon-envelope"></i> Email       </a></li>
+                                        <li id="bt-prompt"     class="itemInic"><a href="#"><i class="icon-leaf"></i> <span lang="en">Prompt</span> de comandos</a></li>
+                                    </ul>
+                                </li>
+                                <li id="itemInic-blocoNotas" class="itemInic"><a href="#"><i class="icon-pencil icon-white"></i> Bloco de notas  </a></li>
+                                <li id="itemInic-calc"       class="itemInic"><a href="#"><i class="icon-tasks icon-white"></i> Calculadora      </a></li>
+                                <li id="itemInic-email"      class="itemInic"><a href="#"><i class="icon-envelope icon-white"></i> Email         </a></li>
+                                <li id="itemInic-prompt"     class="itemInic"><a href="#"><i class="icon-leaf icon-white"></i> <span lang="en">Prompt</span> de comandos</a></li>
+                            </ul>
+                            <p class="navbar-text pull-right">
+                                <span id="lst-habilidades">
+                                </span>
+                                <i class="divider-vertical"></i>
+
+                                <span id="spn-tempo">00:00</span>
+                                <i class="divider-vertical"></i>
+                                <a id="nome-usr-logado" class="navbar-link">Administrador</a>
+                                <i class="divider-vertical"></i>
+                                <i class="btn-voltar icon-off icon-white"></i>
+                            </p>
+                        </div><!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ih-container-os" class="container-fluid">
+                <div id="prompt" class="well janela">
+                    <h5>
+                        <i class="icon-leaf icon-white"></i>
+                        Prompt de comando
+
+                        <span class="IconesJanela">
+                            <i class="icon-remove icon-white"></i>
+                        </span>
+                    </h5>
+                    <div class="progress progress-danger progress-striped active">
+                        <div id="progInvasao" class="bar" style="width: 80%">
+                            <span id="lbl-progInvasao">0%</span>
+                        </div>
+                    </div>
+                    <span id="spn-elem-progress" class="row"></span>
+                    <div id="console" class="maskedInput" role="textarea">
+                    </div><br />
+                    <input id="txt-prompt-cmd" type="text" style="width:442px" accesskey="p"
+                    placeholder="Comando ou resposta..." title="Insira a resposta ou comando" />
+
+                    <a class="btn btn-warning" id="btn-prompt-cmd" style="margin-top:-11px">
+                        <i class="icon-circle-arrow-up icon-white"></i>
+                    </a>
+                </div>
+                <div id="blocoNotas" class="well janela">
+                    <h5>
+                        <i class="icon-pencil icon-white"></i> Bloco de notas
+                        <span class="IconesJanela">
+                            <i class="icon-remove icon-white"></i>
+                        </span>
+                    </h5>
+                    <textarea style="width:390px"
+                    accesskey="b" title="Bloco de Notas"></textarea>
+                </div>
+                <div id="calc" class="well janela">
+                    <h5>
+                        <i class="icon-tasks icon-white"></i> Calculadora
+                        <span class="IconesJanela">
+                            <i class="icon-remove icon-white"></i>
+                        </span>
+                    </h5>
+
+                    <input type="text" style="width:190px" accesskey="c"
+                    placeholder="Insira uma expressão..." title="Insira uma expressão a ser calculada" />
+                    <div class="btn-toolbar">
+                        <div class="btn-group">
+                            <button id="calc-apagar" class="btn btn-warning"><strong>Apagar</strong></button>
+                            <button id="calc-c" class="btn btn-warning"><strong>C</strong></button>
+                        </div><br /><br />
+                        <div class="pull-left">
+                            <div class="btn-group">
+                                <button class="calc-btn btn btn-inverse btn-large">1</button>
+                                <button class="calc-btn btn btn-inverse btn-large">2</button>
+                                <button class="calc-btn btn btn-inverse btn-large">3</button>
+                            </div><br />
+                            <div class="btn-group">
+                                <button class="calc-btn btn btn-inverse btn-large">4</button>
+                                <button class="calc-btn btn btn-inverse btn-large">5</button>
+                                <button class="calc-btn btn btn-inverse btn-large">6</button>
+                            </div><br />
+                            <div class="btn-group">
+                                <button class="calc-btn btn btn-inverse btn-large">7</button>
+                                <button class="calc-btn btn btn-inverse btn-large">8</button>
+                                <button class="calc-btn btn btn-inverse btn-large">9</button>
+                            </div><br />
+                            <div class="btn-group">
+                                <button class="calc-btn btn btn-inverse btn-large">(</button>
+                                <button class="calc-btn btn btn-inverse btn-large">0</button>
+                                <button class="calc-btn btn btn-inverse btn-large">)</button>
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <div class="btn-group">
+                                <button class="calc-btn btn btn-inverse">/</button>
+                                <button class="calc-btn btn btn-inverse">*</button>
+                            </div><br />
+                            <div class="btn-group">
+                                <button class="calc-btn btn btn-inverse">+</button>
+                                <button class="calc-btn btn btn-inverse">-</button>
+                            </div><br />
+                            <div class="btn-group">
+                                <button class="calc-btn btn btn-inverse btn-large" style="width:65px">=</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="email" class="well janela">
+                    <h5>
+                        <i class="icon-envelope icon-white"></i>
+                        Email
+                        <span class="IconesJanela">
+                            <i class="icon-remove icon-white"></i>
+                        </span>
+                    </h5>
+                    <div id="email-lista-msg">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="tela-intro">
+            <div style="margin-top:10%"></div>
+            <div class="container well">
+                <div class="page-header">
+                    <h1>Invasão Hacker!</h1>
+                </div>
+                <div id="tela-intro-msg-container">
+                    <p id="msg-carregando" class="lead">
+                        Iniciando sistema operacional, aguarde...
+                    </p>
+                    <p id="msg-inicio" class="lead">
+                        Arquivos do sistema carregados com sucesso! Utilize as opções de <span lang="en-us">login</span> abaixo para entrar.
+                    </p>
+                </div>      
+                <div id="tela-intro-info">
+                    <div class="progress progress-striped active">
+                        <div id="progInicio" class="bar" style="width:0%"></div>
+                    </div>
+
+                    <div class="btn-group">
+                        <a title="Selecione uma dificuldade" role="button"
+                            class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                        <ul id="lst-dificuldade" class="dropdown-menu">
+                            <li data-nivel="facil">
+                                <a role="button" href="#" class="user-item">Iniciante</a></li>
+                            <li data-nivel="normal" class="active">
+                                <a role="button" href="#" class="user-item">Usuário</a></li>
+                            <li data-nivel="dificil">
+                                <a role="button" href="#" class="user-item">Administrador</a></li>
+                            <li data-nivel="sobrevivente">
+                                <a role="button" href="#" class="user-item">Sobrevivente</a></li>
+                        </ul>
+                    </div>
+                    <a class="btn disabled btn-large" id="btn-login" href="#"><i class="icon-user"></i> Logar</a>
+                    
+                    <div id="grp-btn-extra" class="btn-group pull-right">
+                        <a class="btn" id="btn-informacoes" href="#" role="button">
+                            <i class="icon-book"></i> Informações
+                        </a>
+                        <a class="btn" id="btn-creditos" href="#" role="button">
+                            <i class="icon-book"></i> Créditos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="tela-erro">
+            <div style="margin-top:10%"></div>
+            <div class="container well">
+                <div class="page-header">
+                    <h1>Oh, não! Algo terrivelmente terrível aconteceu!</h1>
+                </div>
+                <p class="lead">
+                    Parece que seu navegador não gosta de nós <strong>:(</strong><br />
+                    ou simplesmente não está afim de abrir o Invasão <span lang="en">Hacker</span>.<br />
+                </p>
+
+                <a href="http://www.google.com.br/search?q=navegadores" class="btn btn-primary btn-large">
+                    Por que não escolher outro mais legal?
+                </a>
+            </div>
+        </div>
+        <div id="tela-derrota">
+            <div style="margin-top:10%"></div>
+            <div class="container well">
+                <div class="page-header">
+                    <h1>Erro crítico! O sistema foi invadido!</h1>
+                </div>
+                <p class="lead">
+                    Que pena! O servidor foi tomado pelos <span lang="en">hackers</span>!<br />
+                    Para continuar lutando contra as forças do mal através do calculo de P.A.s e P.G.s,
+                    efetue <span lang="en">logoff</span> e tente novamente!
+                </p>
+
+                <button class="btn btn-voltar btn-warning pull-left" accesskey="q">
+                    <i class="icon-off icon-white"></i> <span lang="en">logoff</span>
+                </button>
+            </div>
+        </div>
+        <div id="tela-vitoria">
+            <div style="margin-top:10%"></div>
+            <div class="container well">
+                <div class="page-header">
+                    <h1>Parabéns!</h1>
+                </div>
+                <p class="lead">
+                    Bom trabalho!<br />
+                    Todos os <span lang="en">hackers</span> foram impedidos! A polícia está a caminho!<br />
+                    Sua pontuação: <span id="spn-pontuacao"></span>
+                </p><hr />
+
+                <p id="div-conquistas-1" class="lead">
+                    Você obteve conquistas!
+                </p>
+                <table id="tbl-conquistas-2" class="table table-bordered table-striped table-hover"
+                      >
+                    <thead>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Descrição</th>
+                    </thead>
+                    <tbody id="lst-conquistas-obt"></tbody>
+                </table>
+            
+                <button id="btn-public-pontuacao" class="btn">
+                    <i class="icon-thumbs-up"></i> Publicar pontuação
+                </button>
+                <button id="btn-vitoria-pontuacao" class="btn">
+                    <i class="icon-list"></i> Lista de pontuação
+                </button>
+
+                <button class="btn btn-voltar btn-warning pull-right">
+                    <i class="icon-off icon-white"></i> <span lang="en">logoff</span>
+                </button>
+            </div>
+        </div>
+        <div id="tela-informacoes">
+            <div style="margin-top:10%"></div>
+            <div class="container well">
+                <div class="page-header">
+                    <h1>Informações</h1>
+                </div>
+                <h3>Sobre o jogo</h3>
+                <h4>Introdução</h4>
+                <p>
+                    "Invasão Hacker" é um objeto de aprendizagem com propósito matemático. Aqui, o jogador personificará o administrador de um
+                    sistema operacional e tentará impedir invasões realizadas por outros indivíduos.
+                    As chamadas "invasões" baseiam-se no conceito de P.A.s (progressões aritméticas) e P.G.s (progressões geométricas)
+                    para se concretizarem.
+                </p>
+                <h4>Progressões Aritméticas</h4>
+                <p>
+                    Uma progressão aritmética (abreviadamente, P. A.) é uma sequência numérica em que cada termo, a partir do segundo, é igual à soma do termo anterior com uma constante <strong>r</strong>. O número <strong>r</strong> é chamado de razão ou diferença comum da progressão aritmética. (Spiegel & Moyer, p. 251)
+                </p>
+                <h4>Progressões Geométricas</h4>
+                <p>
+                    Uma progressão geométrica é uma sequência numérica em que cada termo, a partir do segundo, é igual ao produto do termo anterior por uma constante, chamada de razão da progressão geométrica. A razão é indicada geralmente pela letra <strong>q</strong> (inicial da palavra "quociente"). (Encyclopaedia perthensis, editada por J. Brown (1816))
+                </p>
+                <h3>Acessibilidade</h3>
+                <h4>Atalhos no teclado</h4>
+                <table id="tbl-atalhos" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <th>#</th>
+                        <th>Atalho</th>
+                        <th>Descrição</th>
+                    </thead>
+                    <tbody id="lst-atalhos">
+                        <tr>
+                            <td>0</td>
+                            <td>Alt+S</td>
+                            <td>Prosseguir no jogo</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Alt+C</td>
+                            <td>Selecionar calculadora</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Alt+B</td>
+                            <td>Selecionar bloco de Notas</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Alt+P</td>
+                            <td>Selecionar prompt de comandos</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Alt+Q</td>
+                            <td>Sair do jogo e retornar ao menu inicial</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Alt+U</td>
+                            <td>Visualizar último elemento da progressão</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Números de 1 à 9, precedido de P</td>
+                            <td>Selecionar termo a(n) da progressão atual, para n igual ao número pressionado</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Números de 1 à 9, precedido de H</td>
+                            <td>Utiliza habilidade correspondente</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <button class="btn btn-voltar pull-right">
+                    <i class="icon-off"></i> Voltar
+                </button>
+            </div>
+        </div>        
+        <div id="tela-creditos">
+            <div style="margin-top:10%"></div>
+            <div class="container well">
+                <div class="page-header">
+                    <h1>Créditos</h1>
+                </div>
+                <div class="row">
+                    <div class="span6">
+                        <h4>Coordenação</h4>
+                        <i class="icon-chevron-right"></i>
+                        Joice Otsuka<br />
+                        <i class="icon-chevron-right"></i>
+                        Delano Medeiros Beder<br />
+                        <i class="icon-chevron-right"></i>
+                        Marcia Rozenfeld
+                        
+                        <h4>Supervisão de equipe</h4>
+                        <i class="icon-chevron-right"></i>
+                        Ivan Rocca
+                    </div>
+                    <div class="span6">
+                        <h4>Roteiro</h4>
+                        <i class="icon-chevron-right"></i>
+                        Daniel Santiago
+
+                        <h4>Desenvolvimento</h4>
+                        <i class="icon-chevron-right"></i>
+                        Lucas Oliveira David
+                    </div>
+                </div>
+
+                <center>
+                    <img src="invasao_hacker/img/logos.png" alt="Imagem exibindo as seguintes logos: projeto LOA - Laboratório de Objetos de Aprendizagem, SEaD-UFSCar (Secretaria de educação à Distância), PROEX, UFSCar (Universidade Federal de São Carlos), Governo Federal - Brasil - Pais rico é pais sem probreza" />
+                </center>
+                <button class="btn btn-voltar pull-right">
+                    <i class="icon-off"></i> Voltar
+                </button>
+            </div>
+        </div>
+
+        <!-- mensagens modais -->
+        <div id="msgModal" class="modal hide fade" role="dialog" aria-hidden="true" aria-labelledby="msgModalLabel">
+            <div class="modal-header">
+                <h3 id="msgModal-titulo">
+                    Você tem uma nova mensagem!</h3>
+            </div>
+            <div id="msgModal-corpo" class="modal-body">
+                <div id="msgModal-corpo-msg"></div>
+                <div id="modal-mercado">
+                    <p>Existem itens disponíveis no mercado! Utilize os seus pontos obtidos durante o jogo para realizar as compras.</p><hr />
+                    <p><strong>Créditos disponíveis:</strong> <span id="market-creditos">0</span>.</p>
+                    
+                    <table id="tbl-mercado" class="table table-bordered table-striped table-hover">
+                        <thead>
+                            <th>#</th>
+                            <th>Título</th>
+                            <th>Descrição</th>
+                        </thead>
+                        <tbody id="lst-mercado">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="msgModal-btn-fechar" class="btn" data-dismiss="modal" accesskey="s">
+                    Prosseguir <i class="icon-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </body>
+</html>
