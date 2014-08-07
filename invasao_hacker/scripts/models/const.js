@@ -1,6 +1,10 @@
 define( function() {
     // objeto contem todas as constantes utilizadas a execucao do codigo
     var CONST = {
+        INTERFACE: {
+            ocultarTextosEmTelasPequenas: true,
+            tamanhoMinimoTelaAntesOcultarTextos: 1024
+        },
         JOGO: {
             intervaloClockFacil:        2000,
             intervaloClockNormal:       1500,
@@ -63,7 +67,7 @@ define( function() {
                     var razao = Invasao.getRazao()
                     
                     Email.ReceberMensagem(
-                        'Cara, acho que a resposta está entre ' + ~~(razao -Math.random() *5) + ' e ' + ~~(razao +Math.random() *5) + '... Tente aí!'
+                        'Hum... Acho que a resposta está entre ' + ~~(razao -Math.random() *5) + ' e ' + ~~(razao +Math.random() *5) + '. Tente aí!'
                     )
                 },
                 function() {

@@ -6,12 +6,14 @@
         <title>Invasão Hacker</title>
         <link href="invasao_hacker/css/bootstrap.min.css" type="text/css" rel="Stylesheet" />
         <link href="invasao_hacker/css/style.css" type="text/css" rel="Stylesheet" />
+        <link href="invasao_hacker/css/anima.css" type="text/css" rel="Stylesheet" />
+        <link href="invasao_hacker/css/audio.css" type="text/css" rel="Stylesheet" />
 
         <script data-main="invasao_hacker/scripts/main" src="invasao_hacker/scripts/libs/require.js"></script>
     </head>
     <body>
-        <div id="tela-jogo">
-            <div class="navbar navbar-fixed-bottom navbar-inverse">
+        <div id="tela-jogo" class="tela">
+            <div id="menu-inicial" class="navbar navbar-fixed-bottom navbar-inverse">
                 <div class="navbar-inner">
                     <div class="container-fluid">
                         <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -19,25 +21,25 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </a>
-                        <a class="brand">Invasão <span lang="en">Hacker</span></a>
+                        <a id="menu-inicial-titulo" class="brand">Invasão <span lang="en">Hacker</span></a>
                         <div class="nav-collapse collapse">
                             <ul id="os-init-bar" class="nav">
                                 <li class="dropdown">
-                                    <a role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                        <i class="icon-th icon-white"></i> Iniciar
+                                    <a id="btn-iniciar" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="icon-th icon-white"></i> <span class="texto-colapsavel">Iniciar</span>
                                     </a>
                                     <ul id="lst-programas" class="dropdown-menu" role="menu" aria-labelledby="drop1">
                                         <li class="nav-header">Menu inicial</li>
                                         <li id="bt-blocoNotas" class="itemInic"><a href="#"><i class="icon-pencil"></i> Bloco de notas</a></li>
-                                        <li id="bt-calc"       class="itemInic"><a href="#"><i class="icon-tasks"></i> calculadora    </a></li>
-                                        <li id="bt-email"      class="itemInic"><a href="#"><i class="icon-envelope"></i> Email       </a></li>
-                                        <li id="bt-prompt"     class="itemInic"><a href="#"><i class="icon-leaf"></i> <span lang="en">Prompt</span> de comandos</a></li>
+                                        <li id="bt-calc"   class="itemInic"><a href="#"><i class="icon-tasks"></i> calculadora </a></li>
+                                        <li id="bt-email"  class="itemInic"><a href="#"><i class="icon-envelope"></i> Email    </a></li>
+                                        <li id="bt-prompt" class="itemInic"><a href="#"><i class="icon-leaf"></i> <span lang="en">Prompt</span> de comandos</a></li>
                                     </ul>
                                 </li>
-                                <li id="itemInic-blocoNotas" class="itemInic"><a href="#"><i class="icon-pencil icon-white"></i> Bloco de notas  </a></li>
-                                <li id="itemInic-calc"       class="itemInic"><a href="#"><i class="icon-tasks icon-white"></i> Calculadora      </a></li>
-                                <li id="itemInic-email"      class="itemInic"><a href="#"><i class="icon-envelope icon-white"></i> Email         </a></li>
-                                <li id="itemInic-prompt"     class="itemInic"><a href="#"><i class="icon-leaf icon-white"></i> <span lang="en">Prompt</span> de comandos</a></li>
+                                <li id="itemInic-blocoNotas" class="itemInic"><a href="#"><i class="icon-pencil icon-white"></i> <span class="texto-colapsavel">Bloco de notas</span>  </a></li>
+                                <li id="itemInic-calc"       class="itemInic"><a href="#"><i class="icon-tasks icon-white"></i> <span class="texto-colapsavel">Calculadora</span>      </a></li>
+                                <li id="itemInic-email"      class="itemInic"><a href="#"><i class="icon-envelope icon-white"></i> <span class="texto-colapsavel">Email</span>         </a></li>
+                                <li id="itemInic-prompt"     class="itemInic"><a href="#"><i class="icon-leaf icon-white"></i> <span class="texto-colapsavel"><span lang="en">Prompt</span> de comandos</span></a></li>
                             </ul>
                             <p class="navbar-text pull-right">
                                 <span id="lst-habilidades">
@@ -155,22 +157,22 @@
                 </div>
             </div>
         </div>
-        <div id="tela-intro">
-            <div style="margin-top:10%"></div>
+        <div id="tela-intro" class="tela">
+            <div class="pre-container-void"></div>
             <div class="container well">
                 <div class="page-header">
                     <h1>Invasão Hacker!</h1>
                 </div>
                 <div id="tela-intro-msg-container">
-                    <p id="msg-carregando" class="lead">
+                    <p id="msg-carregando" class="lead" aria-hidden="false">
                         Iniciando sistema operacional, aguarde...
                     </p>
-                    <p id="msg-inicio" class="lead">
+                    <p id="msg-inicio" class="lead" aria-hidden="true">
                         Arquivos do sistema carregados com sucesso! Utilize as opções de <span lang="en-us">login</span> abaixo para entrar.
                     </p>
-                </div>      
+                </div>
                 <div id="tela-intro-info">
-                    <div class="progress progress-striped active">
+                    <div class="progress progress-striped progress-warning active">
                         <div id="progInicio" class="bar" style="width:0%"></div>
                     </div>
 
@@ -188,7 +190,7 @@
                                 <a role="button" href="#" class="user-item">Sobrevivente</a></li>
                         </ul>
                     </div>
-                    <a class="btn disabled btn-large" id="btn-login" href="#"><i class="icon-user"></i> Logar</a>
+                    <a class="btn disabled btn-large" id="btn-login" accesskey="l" href="#"><i class="icon-user"></i> Logar</a>
                     
                     <div id="grp-btn-extra" class="btn-group pull-right">
                         <a class="btn" id="btn-informacoes" href="#" role="button">
@@ -201,8 +203,8 @@
                 </div>
             </div>
         </div>
-        <div id="tela-erro">
-            <div style="margin-top:10%"></div>
+        <div id="tela-erro" class="tela">
+            <div class="pre-container-void"></div>
             <div class="container well">
                 <div class="page-header">
                     <h1>Oh, não! Algo terrivelmente terrível aconteceu!</h1>
@@ -217,8 +219,8 @@
                 </a>
             </div>
         </div>
-        <div id="tela-derrota">
-            <div style="margin-top:10%"></div>
+        <div id="tela-derrota" class="tela">
+            <div class="pre-container-void"></div>
             <div class="container well">
                 <div class="page-header">
                     <h1>Erro crítico! O sistema foi invadido!</h1>
@@ -234,8 +236,8 @@
                 </button>
             </div>
         </div>
-        <div id="tela-vitoria">
-            <div style="margin-top:10%"></div>
+        <div id="tela-vitoria" class="tela">
+            <div class="pre-container-void"></div>
             <div class="container well">
                 <div class="page-header">
                     <h1>Parabéns!</h1>
@@ -270,9 +272,10 @@
                     <i class="icon-off icon-white"></i> <span lang="en">logoff</span>
                 </button>
             </div>
+            <div class="pos-container-void"></div>
         </div>
-        <div id="tela-informacoes">
-            <div style="margin-top:10%"></div>
+        <div id="tela-informacoes" class="tela">
+            <div class="pre-container-void"></div>
             <div class="container well">
                 <div class="page-header">
                     <h1>Informações</h1>
@@ -303,11 +306,6 @@
                     </thead>
                     <tbody id="lst-atalhos">
                         <tr>
-                            <td>0</td>
-                            <td>Alt+S</td>
-                            <td>Prosseguir no jogo</td>
-                        </tr>
-                        <tr>
                             <td>1</td>
                             <td>Alt+C</td>
                             <td>Selecionar calculadora</td>
@@ -324,21 +322,31 @@
                         </tr>
                         <tr>
                             <td>4</td>
-                            <td>Alt+Q</td>
-                            <td>Sair do jogo e retornar ao menu inicial</td>
+                            <td>Alt+L</td>
+                            <td>Logar no sistema, a partir do menu inicial</td>
                         </tr>
                         <tr>
                             <td>5</td>
+                            <td>Alt+Q</td>
+                            <td>Sair do sistema e retornar ao menu inicial</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
                             <td>Alt+U</td>
                             <td>Visualizar último elemento da progressão</td>
                         </tr>
                         <tr>
-                            <td>6</td>
+                            <td>7</td>
+                            <td>Alt+M</td>
+                            <td>Ligar/desligar som</td>
+                        </tr>                        
+                        <tr>
+                            <td>8</td>
                             <td>Números de 1 à 9, precedido de P</td>
                             <td>Selecionar termo a(n) da progressão atual, para n igual ao número pressionado</td>
                         </tr>
                         <tr>
-                            <td>7</td>
+                            <td>9</td>
                             <td>Números de 1 à 9, precedido de H</td>
                             <td>Utiliza habilidade correspondente</td>
                         </tr>
@@ -349,39 +357,42 @@
                     <i class="icon-off"></i> Voltar
                 </button>
             </div>
+            <div class="pos-container-void"></div>
         </div>        
-        <div id="tela-creditos">
-            <div style="margin-top:10%"></div>
+        <div id="tela-creditos" class="tela">
+            <div class="pre-container-void"></div>
             <div class="container well">
                 <div class="page-header">
                     <h1>Créditos</h1>
                 </div>
-                <div class="row">
-                    <div class="span6">
-                        <h4>Coordenação</h4>
-                        <i class="icon-chevron-right"></i>
-                        Joice Otsuka<br />
-                        <i class="icon-chevron-right"></i>
-                        Delano Medeiros Beder<br />
-                        <i class="icon-chevron-right"></i>
-                        Marcia Rozenfeld
-                        
-                        <h4>Supervisão de equipe</h4>
-                        <i class="icon-chevron-right"></i>
-                        Ivan Rocca
-                    </div>
-                    <div class="span6">
-                        <h4>Roteiro</h4>
-                        <i class="icon-chevron-right"></i>
-                        Daniel Santiago
-
-                        <h4>Desenvolvimento</h4>
-                        <i class="icon-chevron-right"></i>
-                        Lucas Oliveira David
-                    </div>
-                </div>
 
                 <center>
+                    <div class="row">
+                            <h4>Coordenação</h4>
+
+                            <i class="icon-chevron-right"></i>
+                            Joice Otsuka<br />
+                            <i class="icon-chevron-right"></i>
+                            Delano Medeiros Beder<br />
+                            <i class="icon-chevron-right"></i>
+                            Marcia Rozenfeld
+                            
+                            <h4>Supervisão de equipe</h4>
+                            
+                            <i class="icon-chevron-right"></i>
+                            Ivan Rocca
+                        
+                            <h4>Roteiro</h4>
+                            
+                            <i class="icon-chevron-right"></i>
+                            Daniel Santiago
+
+                            <h4>Desenvolvimento</h4>
+                            
+                            <i class="icon-chevron-right"></i>
+                            Lucas Oliveira David
+                    </div><br /><br />
+                
                     <img src="invasao_hacker/img/logos.png" alt="Imagem exibindo as seguintes logos: projeto LOA - Laboratório de Objetos de Aprendizagem, SEaD-UFSCar (Secretaria de educação à Distância), PROEX, UFSCar (Universidade Federal de São Carlos), Governo Federal - Brasil - Pais rico é pais sem probreza" />
                 </center>
                 <button class="btn btn-voltar pull-right">
@@ -414,9 +425,27 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="msgModal-btn-fechar" class="btn" data-dismiss="modal" accesskey="s">
+                <button id="msgModal-btn-fechar" class="btn" data-dismiss="modal">
                     Prosseguir <i class="icon-chevron-right"></i>
                 </button>
+            </div>
+        </div>
+
+        <div id="anima-container">
+            <div class="anima-frame">
+                <center>
+                    <figure id="anima-figure-1">
+                        <figcaption class="awt-hidden-accessible">
+                            Imagem exibindo as seguintes logos: projeto LOA - Laboratório de Objetos de Aprendizagem, SEaD-UFSCar
+                            (Secretaria de educação à Distância), PROEX, UFSCar (Universidade Federal de São Carlos), Governo Federal
+                            - Brasil - Pais rico é pais sem probreza.
+                        </figcaption>
+                    </figure>
+                </center>
+            </div>
+
+            <div class="anima-frame anima-text">
+                Apresenta ...
             </div>
         </div>
     </body>

@@ -1,5 +1,6 @@
 body {
     background:#333;
+    /*overflow-x: hidden;*/
     margin-top: 0;
 }
 
@@ -11,32 +12,21 @@ button {
     cursor:default!important
 }
 
-.btn-group {margin-bottom: 5px}
-
-#tela-intro {
-    display:none;
-    margin-bottom:10%;
+.btn-group {
+    margin-bottom: 5px
 }
+
+#lst-dificuldade {
+    /*top:-75px;
+    left:-5px;*/
+}
+
+.tela {
+    display: none;
+}
+
 #tela-intro-msg-container {
     height:50px;
-}
-#tela-erro {
-    display:none;
-}
-#tela-derrota {
-    display:none;
-}
-#tela-vitoria {
-    display:none;
-}
-#tela-creditos {
-    display:none;
-}
-#tela-informacoes {
-    display:none;
-}
-#tela-jogo {
-    display:none;
 }
 
 #calc {
@@ -107,10 +97,35 @@ button {
     color:#ff9900
 }
 
+.pre-container-void {
+    margin-top:5%;
+}
+.container {
+    width:90%;
+}
+.pos-container-void {
+    margin-top:5%;
+}
+.lead {
+    font-size:120%;
+}
+
+#menu-inicial {
+    font-size:90%!important;
+}
+
+#menu-inicial-titulo {
+    font-size:120%;
+}
+
+#lst-programas > li > a {
+    font-size:80%;
+}
+
 .well.janela {
     position: absolute;
     margin:10px;
-    overflow:hidden;
+    overflow:hidden;    
 
     background: #494949; /* Old browsers */
     background: -moz-linear-gradient(top,  #494949 67%, #323232 100%); /* FF3.6+ */

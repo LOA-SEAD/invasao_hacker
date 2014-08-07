@@ -1,42 +1,137 @@
-﻿define(function () {
+﻿define(['jquery', 'jquery.accessWidgetToolkit.AccessButton'], function ( $ ) {
 
-    var erro = 'quiForca/audio/erro',
-    acerto = 'quiForca/audio/acerto',
-    efeitoDeErro,
-    efeitoDeAcerto;
+    var $controles,
+        $btnTrocarMudo,
 
-    (function inicializar() {
-        if (suportaAudioElement()) {
+    listaSons = {
+        menu: {
+            arquivo: 'invasao_hacker/audio/menu',
+            repetir: true,
+        },
+        jogo: {
+            arquivo: 'invasao_hacker/audio/jogo',
+            repetir: true,
+        },
+        acerto: {
+            arquivo: 'invasao_hacker/audio/acerto',
+        },
+        erro: {
+            arquivo: 'invasao_hacker/audio/erro',
+        },
+    }
+    
+    function suportaAudioElement() {
+        return 'undefined' !== typeof document.createElement('audio').canPlayType
+    }
 
-            if (suportaWav()) {
-                efeitoDeAcerto = new Audio(acerto + '.wav');
-                efeitoDeErro = new Audio(erro + '.wav');
-            } else {
-                efeitoDeAcerto = new Audio(acerto + '.mp3');
-                efeitoDeErro = new Audio(erro + '.mp3');
+    function suportaOgg() {
+        return new Audio().canPlayType('audio/ogg') !== ''
+    }
+
+    function iniciarSom( _som ) {
+        var atualEl = listaSons[_som].el
+
+        // undefined sound file or atualently muted
+        if ( atualEl === undefined )
+            return false
+
+        atualEl.play()
+        return true
+    }
+
+    function pararSom( _som ) {
+        if ( _som == 'todos' || _som == 'all' || _som == 'a' ) {
+            for ( var atual in listaSons ) {
+                listaSons[atual].el.pause()
+            }
+        } else {
+            var atual = listaSons[_som].el
+            
+            if ( atual === undefined )
+                return false // arquivo de som indefinido, retorna um erro
+
+            atual.pause()
+        }
+        return true
+    }
+        
+    function salvaEstadoAtualEInterrompe() {
+        for ( var atual in listaSons ) {
+            // salva estado anterior
+            listaSons[atual].estadoAnterior = listaSons[atual].el.paused
+                ? 'paused'
+                : 'playing'
+            listaSons[atual].el.pause()
+        }
+    }
+
+    function retomarEstadoAnterior() {
+        for ( var atual in listaSons ) {
+            if ( listaSons[atual].estadoAnterior == 'playing' )
+                listaSons[atual].play()
+        }
+    }
+
+    /* 
+     * se _estadoForcado esta definido, forca que ele seja o proximo estado
+     * a aplicado aos sons. Caso contrario inverte mudo de cada som.
+     */
+    function trocarMudo( _estadoForcado ) {
+        for ( var atual in listaSons ) {
+            listaSons[atual].el.muted = typeof _estadoForcado == 'boolean'
+                                     ? _estadoForcado
+                                     : ! listaSons[atual].el.muted
+        }
+
+        $btnTrocarMudo.html(
+            $btnTrocarMudo.html() == '<i class="icon-music"></i> som'
+            ? '<i class="icon-remove"></i> mudo'
+            : '<i class="icon-music"></i> som'
+        )
+    }
+
+    /*
+     * Closure de inicializacao
+     * 
+     * Cria elementos de audios definidos pelo array listaSons
+     * e adiciona elementos de controle ao html
+     */
+    (function() {
+        if ( suportaAudioElement() ) {
+            var format = suportaOgg() ? '.ogg' : '.mp3'
+            
+            for ( var atual in listaSons ) {
+                // create a new Audio element with arquivo + format path
+                listaSons[atual].el      = new Audio(listaSons[atual].arquivo + format)
+                // repetir attribute declared as true in listaSons's element
+                listaSons[atual].el.loop = ( listaSons[atual].repetir )
             }
 
+            // defining controls' html elements
+            $controles = $('<div />')
+                .attr({
+                    id: 'audio-util-controls',
+                    class: 'audio-util-controls',
+                })
+            $btnTrocarMudo = $('<button />')
+                .attr({
+                    id: 'audio-util-btn-toogleMuted',
+                    accesskey: "m",
+                    class: 'btn',
+                })
+                .html('<i class="icon-music"></i> som')
+            
+            $controles.append( $btnTrocarMudo )
+            $('body')  .append( $controles )
+            
+            $btnTrocarMudo.click(trocarMudo)
         }
-    } ());
-
-    function suportaAudioElement() {
-        return typeof document.createElement('audio').canPlayType !== 'undefined';
-    }
-
-    function suportaWav() {
-        return new Audio().canPlayType('audio/wav') !== '';
-    }
+    } ())
 
     return {
-
-        notificarErro: function () {
-            if (efeitoDeErro !== undefined)
-                efeitoDeErro.play();
-        },
-
-        notificarAcerto: function () {
-			if (efeitoDeAcerto !== undefined)
-                efeitoDeAcerto.play();
-		},
-    };
-});
+        iniciarSom : iniciarSom,
+        pararSom   : pararSom,
+        salvaEstadoAtualEInterrompe : salvaEstadoAtualEInterrompe,
+        retomarEstadoAnterior       : retomarEstadoAnterior,
+    }
+})

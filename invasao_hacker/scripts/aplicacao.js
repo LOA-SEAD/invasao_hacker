@@ -6,10 +6,10 @@
  *
  */
 
-define(['jquery', 'jqueryui', './models/const',
+define(['jquery', 'jqueryui', 'audio', 'anima', './models/const',
     './models/invasao_hacker', './models/calculadora', './models/email', './models/prompt', './models/habilidades', './models/conquista',
      'jquery.accessWidgetToolkit.AccessButton'],
-function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conquista ) {
+function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conquista ) {
 
     var nomeUsuario,
     intervaloClock,
@@ -22,22 +22,24 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
     numErros,
     Mercado,
     Tela        = { altura: document.height, largura: document.width },
-    ultimaTecla;
+    ultimaTecla
 
     // Inicio geral da aplicacao.
-    // Este ee chamado em $(document).ready() e define o que ocorre primeiro no jogo.
-    function Init() {
-        console.log( 'Inicio do jogo Invasao Hacker.\nLaboratório de Objetos de Aprendizagem.' )
-        
+    // Ee chamado em $(document).ready() e define o que ocorre primeiro no jogo.
+    function Init() { 
         InitElemHTML()
-        ExibirIntroducao()
+        Anima.init('autoplay', {
+            duration: 2,
+            interval: 1,
+        })
+
+        setTimeout(ExibirIntroducao, 8000)
     }
 
-    // Inicio do jogo. Chamado toda vez que o jogador clica sobre o botao de login
+    // Inicio do jogo. Chamado toda vez que o jogador clica sobre o botao 'jogar'
     function JogoInit() {
-        console.log('Jogo iniciado.')
-
-        if ( estaJogando ) // o jogo ja foi iniciado
+        // o jogo ja foi iniciado
+        if ( estaJogando )
             return false
 
         tempo       = 0
@@ -49,25 +51,21 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
         intervaloPausa = CONST.JOGO.intervaloPausa
         numVezesMercadoApar = CONST.JOGO.numVezesMercadoApar
 
-        $('body').children()
+        $('.tela')
             .css('display', 'none')
-            .filter('#tela-jogo')
-            .fadeIn(200)
+            .filter('#tela-jogo').fadeIn(200)
 
         if ( dificuldade == 'facil' ) {
             nomeUsuario = 'Iniciante'
             intervaloClock = CONST.JOGO.intervaloClockFacil
-        }
-        else if ( dificuldade == 'normal' || !dificuldade ) {
+        } else if ( dificuldade == 'normal' || !dificuldade ) {
             dificuldade = 'normal'
             nomeUsuario = 'Usuário'
             intervaloClock = CONST.JOGO.intervaloClockNormal
-        }
-        else if ( dificuldade == 'dificil' ) {
+        } else if ( dificuldade == 'dificil' ) {
             nomeUsuario = 'Administrador'
             intervaloClock = CONST.JOGO.intervaloClockDificil
-        }
-        else if ( dificuldade == 'sobrevivente' ) {
+        } else if ( dificuldade == 'sobrevivente' ) {
             nomeUsuario = 'Sobrevivente'
             intervaloClock = CONST.JOGO.intervaloClockSobrevivente
         }
@@ -79,7 +77,7 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
         //Conquista  .Reiniciar() // Quando comentado, conquistas nunca se perdem.
         //Habilidades.Reiniciar() // Quando comentado, habilidades nunca se perdem.
         Calculadora.Reiniciar()
-        Invasao    .Reiniciar(dificuldade)
+        Invasao    .Reiniciar( dificuldade )
 
         ExibirMsgModal('<p>Que bom que você está de volta, pois estamos com sérios problemas!</p>'
             + '<p>Hoje, <i lang="en">hackers</i> malígnos estão tentando nos invadir! '
@@ -100,12 +98,17 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             , 'Bem-vindo, ' +nomeUsuario +'!')
 
         Email.ReceberMensagem('bemvindo', undefined, 3000)
+
         setTimeout(clock, intervaloClock)
         setTimeout(IncRelogio, 1000)
+
+        Audio.pararSom('todos')
+        Audio.iniciarSom('jogo')
 
         return true
     }
 
+    // interpreta comando ou valor inserido pelo jogador
     function Interpretar( _sequencia ) {
         var n = Invasao.getTermoN(),
         faseAtual = Invasao.getFaseAtual()
@@ -113,30 +116,30 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
         if ( isNaN(_sequencia) )
             _sequencia = _sequencia.toLowerCase()
 	
-        if (Prompt.VerificarComandoValido(_sequencia) == false)
+        if (Prompt.VerificarComandoValido(_sequencia) == false) {
             return false
 
-        else if ( isNaN(_sequencia) ) {
-            if ( _sequencia == 'shutdown now -p' ) {
+        // o comando ee valido e nao ee uma sequencia
+        } else if ( isNaN(_sequencia) ) {
+            if ( _sequencia == 'shutdown now -p' || _sequencia == 'init 0' ) {
                 ExibirIntroducao()
             } else if ( _sequencia == 'apt-get install firewall' ) {
                 // faz uma pausa de @intervaloPausa milissegundos no jogo.
                 Prompt.Imprimir('Infiltração congelada por ' +intervaloPausa +' milissegundos.', 'Sistema')
                 pausa = true
-                console.log('Jogo congelado.')
                 
                 setTimeout(function() {
                     pausa = false
-                    console.log('Jogo descongelado.')
                     Prompt.Imprimir('Não é possível conter a infiltração por mais tempo!', 'Sistema')
                 }, intervaloPausa)
+
             } else if ( _sequencia == 'apt-get moo' ) {
                 Prompt.Imprimir('Have you mooed today?', 'Sistema')
+
             } else if ( _sequencia == 'whoami' ) {
                 Prompt.Imprimir( nomeUsuario, 'Sistema' )
             }
-        }
-        else {
+        } else {
             Prompt.Imprimir('Testando valor ' +_sequencia +'...')
 
             // jogador pediu a interpretacao de uma razao incorreta.
@@ -144,28 +147,26 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
                 numErros++
                 Invasao.incPont('erro') // reduz pontuacao
                 Prompt.Imprimir('Erro! O termo geral não e ' +_sequencia +'.', 'Sistema') // exibe mensagem de erro
-            }
-            else { // jogador acertou a razao
+            } else { // jogador acertou a razao
                 pausa = true
 
                 Invasao.incPont('acerto') // incrementa pontuacao
                 Invasao.avancarFase()     // avanca de fase
             
                 if (Invasao.verificarVitoria()) {
-                    // conquistas? Alguma foi alcancada?
-                    if (dificuldade == 'facil')  Conquista.Alcancar(0)
-                    if (dificuldade == 'normal')   Conquista.Alcancar(1)
-                    if (dificuldade == 'dificil')    Conquista.Alcancar(2)
-                    if (dificuldade == 'sobrevivente') Conquista.Alcancar(3)
-                    if (numErros == CONST.CONQUISTAS.maxNumErros) Conquista.Alcancar(4)
-                    if (tempo <= CONST.CONQUISTAS.maxTempo)       Conquista.Alcancar(5)
+                    // verifica se alguma das conquistas foi alcancada
+                    if ( dificuldade == 'facil'   )                 Conquista.Alcancar(0)
+                    if ( dificuldade == 'normal'  )                 Conquista.Alcancar(1)
+                    if ( dificuldade == 'dificil' )                 Conquista.Alcancar(2)
+                    if ( dificuldade == 'sobrevivente' )            Conquista.Alcancar(3)
+                    if ( numErros == CONST.CONQUISTAS.maxNumErros ) Conquista.Alcancar(4)
+                    if ( tempo <= CONST.CONQUISTAS.maxTempo )       Conquista.Alcancar(5)
                     // fim das conquistas
 
                     Invasao.incPont('vitoria')
                     estaJogando = false
                     ExibirVitoria()
-                }
-                else {
+                } else {
                     pausa = true
                     Prompt.Imprimir('Porta fechada, a invasão foi impedida!', '<span lang="en-us">Network agent</span>')
                     ExibirMsgModal (
@@ -246,7 +247,9 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
         if (!estaJogando)
             return
 
-        if (!pausa) {	// se pausa == true, aguarda...
+        // nao ha nenhum processamento quando o jogo esta pausado
+        // ocorre enquanto uma mensagem ee exibida
+        if ( ! pausa ) {	
             var termoN = Invasao.avancarTermoN()
 
             // atualiza barra de progresso
@@ -288,7 +291,6 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
         $('#msgModal-titulo')   .html(pTitulo)
         $('#msgModal')          .modal('show')
         
-        $('#msgModal-btn-fechar').focus()
         return false
     }
 
@@ -311,6 +313,7 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
 
             if (_janela == 'email') Email.TrocFechado()
         }
+
         return false
     }
     function AlternarPlano( $_janela, _plano ) {
@@ -325,10 +328,7 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
     }
 
     function ExibirVitoria() {
-        var $telas = $('body').children().css('display', 'none'),
-            $itensConq = $('#lst-conquistas-obt'),
-            
-            conqObtidas = Conquista.getAlcancaveis('alcancados'),
+        var conqObtidas = Conquista.getAlcancaveis('alcancados'),
             conqRestantes = Conquista.getAlcancaveis('restantes')
         
         $('#spn-pontuacao').html(Invasao.getPontuacao()) // exibe pontuacao alcancada pelo jogador
@@ -351,10 +351,12 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             +'<td>' +conqRestantes[i].descricao +'</td>'
             +'</tr>'
         }
-        $itensConq.html(tr)
+        $('#lst-conquistas-obt').html(tr)
 
         // exibe a tela de vitoria, aguarda 200 ms e exibe as conquistas, caso elas existam.
-        $telas.filter('#tela-vitoria').fadeIn(200)
+        $('.tela')
+            .css('display', 'none')
+            .filter('#tela-vitoria').fadeIn(200)
         
         // se existem conquistas alcancadas exibe mensagem "Voce obteve conquistas!"
         if (conqObtidas.length > 0)
@@ -363,51 +365,95 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
         $('#tbl-conquistas-2').fadeIn(200)
     }
     function ExibirDerrota() {
-        var $telas = $('body').children()
-        .css('display', 'none')
-
-        $telas.filter('#tela-derrota').fadeIn(200)
+        $('.tela')
+            .css('display', 'none')
+            .filter('#tela-derrota').fadeIn(200)
     }
     function ExibirIntroducao() {
         estaJogando = false
-        var $telas = $('body').children()
-        .css('display', 'none')
-
+        
         $('#btn-login')     .addClass('disabled')
         $('#progInicio')    .css('width', 0)
+        
+        $('#msg-inicio')    .attr('aria-hidden', 'true')
         $('#msg-inicio')    .hide()
+        
+        $('#msg-carregando').attr('aria-hidden', 'false')
         $('#msg-carregando').show()
+        
+        $('.tela')
+            .css('display', 'none')
+            .filter('#tela-intro').fadeIn(200, function() {
+                $('#progInicio').animate({
+                    width: '+=100%'
+                }, 200)
+                setTimeout(function() {
+                    $('#btn-login').removeClass('disabled')
+                    
+                    $('#msg-carregando').attr('aria-hidden', 'true')
+                    $('#msg-carregando').slideUp('fast', function() {
+                        $('#msg-inicio').attr('aria-hidden', 'false')
+                        $('#msg-inicio').slideDown()
+                    })  
+                }, 800)
+            })
 
-        $telas.filter('#tela-intro').fadeIn(200, function() {
-            $('#progInicio').animate({
-                width: '+=100%'
-            }, 200)
-            setTimeout(function() {
-                $('#btn-login').removeClass('disabled')
-                
-                $('#msg-carregando').slideUp('fast', function() {
-                    $('#msg-inicio').slideDown()
-                })
-
-                
-            }, 800)
-        })
+        Audio.pararSom  ('todos')
+        Audio.iniciarSom('menu')
     }
     function ExibirInformacoes() {
-        $('body').children()
-        .css('display', 'none')
-        .filter('#tela-informacoes').fadeIn(200)
+        $('.tela')
+            .css('display', 'none')
+            .filter('#tela-informacoes')
+                .fadeIn(200)
     }
     function ExibirCreditos() {
-        $('body').children()
-        .css('display', 'none')
-        .filter('#tela-creditos').fadeIn(200)
+        $('.tela')
+            .css('display', 'none')
+            .filter('#tela-creditos')
+                .fadeIn(200)
     }
 
     // Configura os elementos HTML necessarios ao jogo.
     function InitElemHTML() {
         var $janelas = $('#ih-container-os').children()
         Mercado      = $('#modal-mercado')
+
+        // corrige altura e largura para as atuais, caso a tela seja modificada.
+        $(window).on('resize', function() {
+            Tela.altura  = document.height
+            Tela.largura = document.width
+
+            $('.container').css('max-height', 0.8 * Tela.altura + 'px')
+
+            // esconde elementos ocultaveis caso a tela seja pequena
+            if (
+                CONST.INTERFACE.ocultarTextosEmTelasPequenas &&
+                Tela.largura < CONST.INTERFACE.tamanhoMinimoTelaAntesOcultarTextos
+               )
+                $('.texto-colapsavel').hide()
+            else
+                $('.texto-colapsavel').show()
+        })
+
+        $('.container').css('max-height', 0.8 * Tela.altura + 'px')
+
+        // caso a tela seja pequena, esconde bloco de notas e calculadora        
+        if ( Tela.largura < CONST.INTERFACE.tamanhoMinimoTelaAntesOcultarTextos ) {
+
+            FecharJanela('calc')
+            FecharJanela('blocoNotas')
+
+            $('#email') .css('left', '50%')
+            $('#prompt').css('top', '1%')
+            
+            // esconde elementos ocultaveis caso a tela seja pequena
+            // e o atributo definido em INTERFACE permita
+            if ( CONST.INTERFACE.ocultarTextosEmTelasPequenas )
+                $('.texto-colapsavel').hide()
+            else
+                $('.texto-colapsavel').show()
+        }
 
         // todas as janelas podem ser arrastadas e quando clicadas
         // serao colocadas sobre as demais.
@@ -416,46 +462,50 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             // definindo como acao deste icone o fechamento de sua respectiva janela.
             var idAtual = this.id
             $('#' +idAtual +' > h5 > span > .icon-remove').on('click', function() {
-                return FecharJanela(idAtual)
+                FecharJanela(idAtual)
+                return false
             })
 
             $( this )
-            .on('mousedown', function () {
-                $janelas.each(function() {
-                    AlternarPlano($(this), 'fundo')
+                .on('mousedown', function () {
+                    $janelas.each(function() {
+                        AlternarPlano($(this), 'fundo')
+                    })
+
+                    AlternarPlano($(this), 'frente')
                 })
+                .draggable({
+                    stop: function( event, ui ) {
+                        // inpedindo que as janelas sejam jogadas para fora da tela
+                        // quando movimentadas utilizando o metodo draggable()
+                    
+                        var janelaAtual = ui.helper,
+                        X_Atual = parseInt(ui.position.top +janelaAtual.height() /2),
+                        Y_Atual = parseInt(ui.position.left +janelaAtual.width() /2)
+                    
+                        if (X_Atual > Tela.altura)
+                            $(janelaAtual).css('top', (0.9 *Tela.altura -janelaAtual.height()) +'px')
 
-                AlternarPlano($(this), 'frente')
-            })
-            .draggable({
-                stop: function( event, ui ) {
-                    // inpedindo que as janelas sejam jogadas para fora da tela
-                    // quando movimentadas utilizando o metodo draggable()
-                
-                    var janelaAtual = ui.helper,
-                    X_Atual = parseInt(ui.position.top +janelaAtual.height()/2),
-                    Y_Atual = parseInt(ui.position.left +janelaAtual.width()/2)
-                
-                    if (X_Atual > Tela.altura)
-                        $(janelaAtual).css('top', (0.9*Tela.altura -janelaAtual.height()) +'px')
-
-                    if (Y_Atual > Tela.largura)
-                        $(janelaAtual).css('left', (0.9*Tela.largura -janelaAtual.width()) +'px')
-                }
-            })
+                        if (Y_Atual > Tela.largura)
+                            $(janelaAtual).css('left', (0.9 *Tela.largura -janelaAtual.width()) +'px')
+                    }
+                })
         })
 
         // Para cada item da barra inicial, definimos como acao do 'click'
         // abrir a janela a qual este determinado item se refere
         $('.itemInic')
-            .accessButton({ accessibleLabel: function() {
+            .accessButton({
+                accessibleLabel: function() {
                     "Iniciar programa " +this.id.split('-')[1]
                 }
             })
             .data("accessButton")
             .clickOrActivate(function () {
                 var janelaAtual = this.id.split('-')[1]
-                return ExibirJanela(janelaAtual)
+                ExibirJanela( janelaAtual )
+                
+                return false
             })
 
         // tooltips dos elementos
@@ -480,8 +530,8 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
                 .attr({
                     'aria-hidden': true
                 })
-            //console.log( $('body').children().not('#msgModal').not('.modal-backdrop') )
-            $('#market-creditos').focus()
+            
+            $('#msgModal-btn-fechar').focus()
         })
         $('#msgModal').on('hidden', function () {
             pausa = false
@@ -490,7 +540,6 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
                     'aria-hidden': false
                 })
 
-            //console.log( $('body').children().not('#msgModal').not('.modal-backdrop') )
             $('#txt-prompt-cmd').focus()
         })
 
@@ -498,8 +547,10 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
         $('#calc > input').on('keypress', function(event) {
             var input = event.keyCode || event.which
 
-            if (input == 13) Calculadora.Operar('=')
-            else             Calculadora.Operar(String.fromCharCode(input))
+            if ( input == 13 )
+                Calculadora.Operar('=')
+            else
+                Calculadora.Operar(String.fromCharCode(input))
 
             return false
         })
@@ -508,12 +559,16 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             .data("accessButton")
             .clickOrActivate(function () {
                 Calculadora.Operar($(this).html())
+                
+                return false
             })
         $('#calc-apagar')
             .accessButton({ accessibleLabel: "Limpar expressão" })
             .data("accessButton")
             .clickOrActivate(function () {
                 $('#calc > input').val('')
+
+                return false
             })
         $('#calc-c')
             .accessButton({ accessibleLabel: "Remove o último digito presente na expressão" })
@@ -523,6 +578,8 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
                 expressao = expressao.substr(0, expressao.length -1)
 
                 $('#calc > input').val(expressao)
+
+                return false
             })
 
         // eventos de utilizacao habilidades
@@ -532,6 +589,7 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             .data("accessButton")
             .clickOrActivate(function () {
                 operarHabilidades( $(this).data('hab'), 'utilizar' )
+              
                 return false
             })
 
@@ -541,8 +599,64 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             .data("accessButton")
             .clickOrActivate(function () {
                 operarHabilidades( $(this).data('hab'), 'comprar' )
+                
+                return false
+            })              
+
+        $('#btn-login')
+            .accessButton({ accessibleLabel: "Logar no sistema" })
+            .data("accessButton")
+            .clickOrActivate(function () {
+                if ( ! $(this).hasClass('disabled') )
+                    JogoInit()
+
                 return false
             })
+        $('#btn-informacoes')
+            .accessButton({ accessibleLabel: "Exibir informações" })
+            .data("accessButton")
+            .clickOrActivate(function () {
+                ExibirInformacoes()
+              
+                return false
+            })
+        $('#btn-creditos')
+            .accessButton({ accessibleLabel: "Exibir créditos" })
+            .data("accessButton")
+            .clickOrActivate(function () {
+                ExibirCreditos()
+             
+                return false
+            })
+        $('.btn-voltar')
+            .accessButton({ accessibleLabel: "Voltar à introdução" })
+            .data("accessButton")
+            .clickOrActivate(function () {
+                ExibirIntroducao()
+            
+                return false
+            })
+        
+        $('#btn-prompt-cmd')
+            .accessButton({ accessibleLabel: "Verificar valor ou executar comando inserido acima" })
+            .data("accessButton")
+            .clickOrActivate(function () {
+                Interpretar($('#txt-prompt-cmd').val())
+            
+                return false
+            })
+
+        // eventos do Email
+        $('#Email').hide()
+
+        // anula clique direito do mouse
+        $('html').on('contextmenu', function() {
+            return false
+        })
+
+        $('#txt-prompt-cmd').on('keypress', function(event) {
+            if (event.keyCode == 13) Interpretar($(this).val())
+        })
 
         // atalhos da aplicacao durante o jogo (nao se aplica a menus)
         $(document).on('keypress', function( event ) {
@@ -555,7 +669,7 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
                 if ( '1' <= tecla && '9' >= tecla ) {
                     if ('p' == ultimaTecla) {
                         var elCount = $('#console').children().filter('.cons-msg').length;
-                        //console.log($('#console').children().filter('.cons-msg').eq( elCount -parseInt(tecla) ))
+                        
                         $('#console').children().filter('.cons-msg').eq( elCount -parseInt(tecla) ).focus()
                         $('#txt-prompt-cmd').val('')
                     
@@ -570,52 +684,6 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             ultimaTecla = tecla
         })
 
-        // eventos do Email
-        $('#Email').hide()
-
-        // eventos do mouse
-        $('html').on('contextmenu', function() { return false })
-
-        $('#btn-login')
-            .accessButton({ accessibleLabel: "Logar no sistema" })
-            .data("accessButton")
-            .clickOrActivate(function () {
-                if ( !$(this).hasClass('disabled') ) JogoInit()
-                return false
-            })
-        $('#btn-informacoes')
-            .accessButton({ accessibleLabel: "Exibir informações" })
-            .data("accessButton")
-            .clickOrActivate(function () {
-                ExibirInformacoes()
-                return false
-            })
-        $('#btn-creditos')
-            .accessButton({ accessibleLabel: "Exibir créditos" })
-            .data("accessButton")
-            .clickOrActivate(function () {
-                ExibirCreditos()
-                return false
-            })
-        $('.btn-voltar')
-            .accessButton({ accessibleLabel: "Voltar à introdução" })
-            .data("accessButton")
-            .clickOrActivate(function () {
-                ExibirIntroducao()
-                return false
-            })
-        
-        $('#btn-prompt-cmd')
-            .accessButton({ accessibleLabel: "Verificar valor ou executar comando inserido acima" })
-            .data("accessButton")
-            .clickOrActivate(function () {
-                Interpretar($('#txt-prompt-cmd').val())
-                return false
-            })
-        $('#txt-prompt-cmd').on('keypress', function(event) {
-            if (event.keyCode == 13) Interpretar($(this).val())
-        })
-
         // configurando campos de selecao de dificuldade
         $('#lst-dificuldade').children().on('click', function() {
             $(this).siblings().removeClass('active') // remove selecao dos irmaos
@@ -627,13 +695,7 @@ function ( $, jul, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conq
             if (dificuldade != 'facil' && dificuldade != 'normal' && dificuldade != 'dificil' && dificuldade != 'sobrevivente')
                 dificuldade = 'normal'
             
-            return false
-        })
-
-        // corrige altura e largura para as atuais.
-        $(window).on('resize', function() {
-            Tela.altura  = document.height
-            Tela.largura = document.width
+            //return false
         })
     }
 

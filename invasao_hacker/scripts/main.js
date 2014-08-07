@@ -5,7 +5,9 @@ require.config({
         'bootstrap': './libs/bootstrap',
         
         'jquery.accessWidgetToolkit.core':         './libs/jquery.accessWidgetToolkit.core',  
-        'jquery.accessWidgetToolkit.AccessButton': './libs/jquery.accessWidgetToolkit.AccessButton'
+        'jquery.accessWidgetToolkit.AccessButton': './libs/jquery.accessWidgetToolkit.AccessButton',
+        'anima' : './utils/anima',
+        'audio' : './utils/audio'
     },
     shim: {
         'bootstrap': {
@@ -15,7 +17,6 @@ require.config({
 });
 
 require(['jquery', 'aplicacao', 'bootstrap'], function ( $, aplicacao, bootstrap ) {
-
     $(document).ready(function () {
         aplicacao.Init()
     })
