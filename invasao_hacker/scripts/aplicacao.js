@@ -336,9 +336,8 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             conqRestantes = Conquista.getAlcancaveis('restantes')
         
         $('#spn-pontuacao').html(Invasao.getPontuacao()) // exibe pontuacao alcancada pelo jogador
-        $('#div-conquistas-1').hide()
-        $('#tbl-conquistas-2').hide()
-        $itensConq.empty()
+        $('#conquistas-1').hide()
+        $('#conquistas-2').hide()
 
         var tr = '', i
         for (i = 0; i < conqObtidas.length; i++) {
@@ -364,9 +363,9 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         
         // se existem conquistas alcancadas exibe mensagem "Voce obteve conquistas!"
         if (conqObtidas.length > 0)
-            $('#div-conquistas-1').fadeIn(200)
+            $('#conquistas-1').fadeIn(200)
 
-        $('#tbl-conquistas-2').fadeIn(200)
+        $('#conquistas-2').fadeIn(200)
     }
     function ExibirDerrota() {
         $('.tela')
