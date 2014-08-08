@@ -13,18 +13,30 @@ define( function() {
             intervaloPausa:             5000,
             numVezesMercadoApar:            2
         },
-        PROG: {
-            numProgressoes:        10,
-            numProgSobrevivente: 1000,
-
-            probPAFacil:           50,
-            probPANormal:          50,
-            probPADificil:         20,
-            probPASobrevivente:    50,
-
-            numTentativas:          2, // para -1, numero de tentativas ee infinito
-            retrocessoAoPerder:    20  // quando o hacker tem exito ao invadir o sistema, porem o jogador ainda nao esgotou
-                                       // seu numero de tentativas o progresso da invasao voltara a este valor (em %)
+        PROGRESSOES: {
+            numeroDeTentativas:       2,  // para -1, numero de tentativas ee infinito
+            retrocessoAoPerder:      20,  // quando o hacker tem exito ao invadir o sistema, porem o jogador ainda nao esgotou
+                                        // seu numero de tentativas o progresso da invasao voltara a este valor (em %)
+            facil: {
+                numeroDeProgressoes: 10,
+                probabilidadePa:      1,
+                razaoMaxima:          5,
+            },
+            normal: { 
+                numeroDeProgressoes: 10,
+                probabilidadePa:     .5,
+                razaoMaxima:          8,
+            },
+            dificil: {
+                numeroDeProgressoes: 10,
+                probabilidadePa:     .2,
+                razaoMaxima:         10,
+            },
+            sobrevivente: {
+                numeroDeProgressoes: 1000,
+                probabilidadePa:       .5,
+                razaoMaxima:           10,
+            },
         },
         PONTUACAO: {
             acerto: 50,

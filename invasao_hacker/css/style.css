@@ -4,7 +4,7 @@ body {
     margin-top: 0;
 }
 
-a {
+a, .btn {
     cursor:default;
 }
 

@@ -7,7 +7,7 @@ define(['./progressoes', './const'], function(progressoes, CONST) {
 
     // objeto principal
     var Invasao = {
-        tentativaAtual: CONST.PROG.numTentativas,
+        tentativaAtual: CONST.PROGRESSOES.numeroDeTentativas,
         pontuacao: 0,
         dificuldade: 'normal',
         fases: {
@@ -34,25 +34,26 @@ define(['./progressoes', './const'], function(progressoes, CONST) {
         if (Invasao.fases.termoN < 20) {  		//	o hacker invadiu o sistema com sucesso
             return 'padrao'
         } else if (Invasao.tentativaAtual == -1) {  	//	o numero de tentativas restantes ee infinito
-            Invasao.fases.termoN -= CONST.PROG.retrocessoAoPerder
+            Invasao.fases.termoN -= CONST.PROGRESSOES.retrocessoAoPerder
             return 'infinito'
         } else if (Invasao.tentativaAtual-- == 0) { 	//	as tentativas do usuario acabaram
             return 'derrota'
         } else {
-            Invasao.fases.termoN -= CONST.PROG.retrocessoAoPerder
+            Invasao.fases.termoN -= CONST.PROGRESSOES.retrocessoAoPerder
             return 'reset'
         }
     }
 
     // utilizada sempre durante o inicio de um jogo, reseta as variaveis do objeto Invasao para as constantes.
     function privReiniciar(pDificuldade) {
+        console.log(pDificuldade);
         Invasao.fases.termoN = 0
         Invasao.fases.atual = 0
         Invasao.pontuacao = 0
 
-        Invasao.fases.progressao = progressoes.GerarProgressoes(CONST.PROG.numProgressoes, pDificuldade)
+        Invasao.fases.progressao = progressoes.GerarProgressoes(CONST.PROGRESSOES[pDificuldade].numeroDeProgressoes, pDificuldade)
 
-        Invasao.tentativaAtual = CONST.PROG.numTentativas
+        Invasao.tentativaAtual = CONST.PROGRESSOES.numeroDeTentativas
         Invasao.janelaAtiva = ''
         Invasao.numAcertos = 0
         Invasao.numErros = 0

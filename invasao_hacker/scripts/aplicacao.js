@@ -11,7 +11,8 @@ define(['jquery', 'jqueryui', 'audio', 'anima', './models/const',
      'jquery.accessWidgetToolkit.AccessButton'],
 function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conquista ) {
 
-    var nomeUsuario,
+    var
+    nomeUsuario,
     intervaloClock,
     intervaloPausa,
     numVezesMercadoApar,
@@ -21,8 +22,11 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
     tempo,
     numErros,
     Mercado,
-    Tela        = { altura: document.height, largura: document.width },
-    ultimaTecla
+    ultimaTecla,
+    Tela = { 
+        altura: document.height,
+        largura: document.width
+    }
 
     // Inicio geral da aplicacao.
     // Ee chamado em $(document).ready() e define o que ocorre primeiro no jogo.
@@ -48,7 +52,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         estaJogando = true
         ultimaTecla = null
 
-        intervaloPausa = CONST.JOGO.intervaloPausa
+        intervaloPausa      = CONST.JOGO.intervaloPausa
         numVezesMercadoApar = CONST.JOGO.numVezesMercadoApar
 
         $('.tela')
@@ -178,7 +182,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
                     Mercado.show()
                     Email.ReceberMensagem(n >= 15 ? 'porpouco' : 'parabens')
                     
-                    if ( faseAtual == CONST.PROG.numProgressoes -1 )
+                    if ( faseAtual == CONST.PROGRESSOES[dificuldade].numeroDeProgressoes -1 )
                         Email.ReceberMensagem('quasela', 3, 2000)
                 }
             }
