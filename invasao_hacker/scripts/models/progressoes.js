@@ -20,8 +20,6 @@ define(['jquery', './const'], function ( $, CONST ) {
         var progressoes = []
         var a1, razao, tipo
 
-        console.log("Progressoes.privGerarProg : " + numeroDeProgressoes + " : " + dificuldade)
-
         // dificuldade = dificuldade ou padrao 'normal'
         dificuldade = dificuldade || 'normal'
         // numero invalido

@@ -46,7 +46,6 @@ define(['./progressoes', './const'], function(progressoes, CONST) {
 
     // utilizada sempre durante o inicio de um jogo, reseta as variaveis do objeto Invasao para as constantes.
     function privReiniciar(pDificuldade) {
-        console.log(pDificuldade);
         Invasao.fases.termoN = 0
         Invasao.fases.atual = 0
         Invasao.pontuacao = 0

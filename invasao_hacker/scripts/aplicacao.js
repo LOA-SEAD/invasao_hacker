@@ -33,11 +33,11 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
     function Init() { 
         InitElemHTML()
         Anima.init('autoplay', {
-            duration: 2,
-            interval: 1,
+            duration: .1, // 2,
+            interval: .1, // 1,
         })
 
-        setTimeout(ExibirIntroducao, 8000)
+        setTimeout(ExibirIntroducao, 1000)
     }
 
     // Inicio do jogo. Chamado toda vez que o jogador clica sobre o botao 'jogar'
@@ -253,7 +253,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
         // nao ha nenhum processamento quando o jogo esta pausado
         // ocorre enquanto uma mensagem ee exibida
-        if ( ! pausa ) {	
+        if ( ! pausa ) {
             var termoN = Invasao.avancarTermoN()
 
             // atualiza barra de progresso
@@ -558,11 +558,10 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             return false
         })
         $('.calc-btn')
-            .accessButton({ accessibleLabel: "Calcular expressão atual" })
-            .data("accessButton")
-            .clickOrActivate(function () {
+            // .accessButton({ accessibleLabel: "Calcular expressão atual" })
+            // .data("accessButton")
+            .click(function () {
                 Calculadora.Operar($(this).html())
-                
                 return false
             })
         $('#calc-apagar')
@@ -688,7 +687,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         })
 
         // configurando campos de selecao de dificuldade
-        $('#lst-dificuldade').children().on('click', function() {
+        $('#lst-dificuldade').children().click(function() {
             $(this).siblings().removeClass('active') // remove selecao dos irmaos
             $(this).addClass('active')               // adiciona selecao a dificuldade clicada
 
@@ -698,7 +697,8 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             if (dificuldade != 'facil' && dificuldade != 'normal' && dificuldade != 'dificil' && dificuldade != 'sobrevivente')
                 dificuldade = 'normal'
             
-            //return false
+            $('#lst-dificuldade').dropdown('toogle')
+            return false
         })
     }
 

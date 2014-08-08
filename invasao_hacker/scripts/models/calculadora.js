@@ -7,19 +7,18 @@ define(['jquery'], function($) {
     
     var Calc = {
         acabouDeCalcular: false,
-        simbolosAceitos: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
-            '.', '+', '-', '/', '*', '(', ')', ' ']
+        simbolosAceitos:  ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '+', '-', '/', '*', '(', ')', ' ']
     }
 
     /*
-     * function privOperar(pDado)
+     * function Operar(pDado)
      * Parametros:
      *     @pDado: simbolo de entrada. Este deve pertencer ao conjunto @simbolosAceitos.
      *     Caso seja '=', deve calcular a expressão, caso contrário adiciona-o aa expressao.
      * 
      * Retorna: true, se expressao final ee valida. Falso caso contrario.
      */
-    function privOperar(pDado) {
+    function Operar(pDado) {
         var expressao, tmp, ret
             
         if(pDado != '=') { // um botao foi pressionado, mas nao ee o "=", logo concatenamos aquele botao com o resto da expressao no input!
@@ -61,15 +60,16 @@ define(['jquery'], function($) {
         return true
     }
 
-    function privReiniciar() {
+    function Reiniciar() {
         Calc.acabouDeCalcular = false
         $('#calc > input').val('')
 
         return true
     }
 
-    return { // retorna elemento publico
-        Operar: privOperar,
-        Reiniciar: privReiniciar
+    // retorna elemento publico
+    return {
+        Operar: Operar,
+        Reiniciar: Reiniciar
     }
 })
