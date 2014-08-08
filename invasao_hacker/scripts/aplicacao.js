@@ -12,46 +12,44 @@ define(['jquery', 'jqueryui', 'audio', 'anima', './models/const',
 function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Habilidades, Conquista ) {
 
     var
-    nomeUsuario,
-    intervaloClock,
-    intervaloPausa,
-    EstaJogando,
+    UserName,
+    ProgressionInterval,
+    PauseInterval,
+    IsPlaying,
     dificuldade,
-    pausa,
-    tempo,
-    numErros,
-    Mercado,
-    ultimaTecla,
-    Tela = { 
-        altura: document.height,
-        largura: document.width
+    IsPaused,
+    Time,
+    NumberOfMistakes,
+    Market,
+    LastKeyPressed
+
+    /** 
+     * Application startup
+     *
+     */ 
+    function Init() {
+        InitHTML()
+        Anima.init('autoplay', { duration: 2, interval: 1 })
+        setTimeout(ShowIntroduction, 8000)
     }
 
-    // Inicio geral da aplicacao.
-    // Ee chamado em $(document).ready() e define o que ocorre primeiro no jogo.
-    function Init() { 
-        InitElemHTML()
-        Anima.init('autoplay', {
-            duration: .1, // 2,
-            interval: .1, // 1,
-        })
-
-        setTimeout(ExibirIntroducao, 1000)
-    }
-
-    // Inicio do jogo. Chamado toda vez que o jogador clica sobre o botao 'jogar'
-    function JogoInit() {
-        // o jogo ja foi iniciado
-        if ( EstaJogando )
+    /** 
+     * Game start. Executed when the player hit the button "jogar"
+     *
+     */
+    function InitGame() {
+        // the game was already started
+        if ( IsPlaying ) {
             return false
+        }   
 
-        tempo       = 0
-        numErros    = 0
-        pausa       = true
-        EstaJogando = true
-        ultimaTecla = null
+        Time       = 0
+        NumberOfMistakes    = 0
+        IsPaused       = true
+        IsPlaying = true
+        LastKeyPressed = null
 
-        intervaloPausa      = CONST.JOGO.intervaloPausa
+        PauseInterval      = CONST.JOGO.intervaloPausa
 
         $('.tela')
             .css('display', 'none')
@@ -59,21 +57,22 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .fadeIn(200)
 
         if ( dificuldade == 'facil' ) {
-            nomeUsuario = 'Iniciante'
-            intervaloClock = CONST.JOGO.intervaloClockFacil
+            UserName = 'Iniciante'
+            ProgressionInterval = CONST.JOGO.intervaloClockFacil
         } else if ( dificuldade == 'normal' || !dificuldade ) {
             dificuldade = 'normal'
-            nomeUsuario = 'Usuário'
-            intervaloClock = CONST.JOGO.intervaloClockNormal
+            UserName = 'Usuário'
+            ProgressionInterval = CONST.JOGO.intervaloClockNormal
         } else if ( dificuldade == 'dificil' ) {
-            nomeUsuario = 'Administrador'
-            intervaloClock = CONST.JOGO.intervaloClockDificil
+            UserName = 'Administrador'
+            ProgressionInterval = CONST.JOGO.intervaloClockDificil
         } else if ( dificuldade == 'sobrevivente' ) {
-            nomeUsuario = 'Sobrevivente'
-            intervaloClock = CONST.JOGO.intervaloClockSobrevivente
+            UserName = 'Sobrevivente'
+            ProgressionInterval = CONST.JOGO.intervaloClockSobrevivente
         }
 
-        $('#nome-usr-logado').html( nomeUsuario ) // insere a referencia da dificuldade na barra do SO
+        // write down name of user on the start menu
+        $('#nome-usr-logado').html( UserName )
 
         Prompt     .Reiniciar()
         Email      .Reiniciar()
@@ -82,7 +81,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         Calculadora.Reiniciar()
         Invasao    .Reiniciar( dificuldade )
 
-        ExibirMsgModal('<p>Que bom que você está de volta, pois estamos com sérios problemas!</p>'
+        ShowModalMessage('<p>Que bom que você está de volta, pois estamos com sérios problemas!</p>'
             + '<p>Hoje, <i lang="en">hackers</i> malígnos estão tentando nos invadir! '
             + 'O <strong lang="en">firewall</strong> está lutando firme, mas não vai aguentar por muito mais tempo... '
             + 'Por favor, nos ajude a acabar com a festa deles!</p>'
@@ -98,12 +97,12 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             + '<p>Seu objetivo aqui é <strong>identificar a razão</strong> da P.A. ou P.G. antes que a invasão se conclua, utilizando a ajuda '
             + 'dos recursos mencionados acima. Boa sorte!'
             + '</p>'
-            , 'Bem-vindo, ' +nomeUsuario +'!')
+            , 'Bem-vindo, ' +UserName +'!')
 
         Email.ReceberMensagem('bemvindo', undefined, 3000)
 
-        setTimeout(clock, intervaloClock)
-        setTimeout(IncRelogio, 1000)
+        setTimeout(IncrementProgression, ProgressionInterval)
+        setTimeout(IncrementClock, 1000)
         StartProgressBar()
 
         Audio.pararSom('todos')
@@ -113,47 +112,47 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
     }
 
     // interpreta comando ou valor inserido pelo jogador
-    function Interpretar( _sequencia ) {
+    function InterpretInput( input ) {
         var n = Invasao.getTermoN(),
         faseAtual = Invasao.getFaseAtual()
 
-        if ( isNaN(_sequencia) )
-            _sequencia = _sequencia.toLowerCase()
+        if ( isNaN(input) )
+            input = input.toLowerCase()
 	
-        if (Prompt.VerificarComandoValido(_sequencia) == false) {
+        if (Prompt.VerificarComandoValido(input) == false) {
             return false
 
         // o comando ee valido e nao ee uma sequencia
-        } else if ( isNaN(_sequencia) ) {
-            if ( _sequencia == 'shutdown now -p' || _sequencia == 'init 0' ) {
-                ExibirIntroducao()
-            } else if ( _sequencia == 'apt-get install firewall' ) {
-                // faz uma pausa de @intervaloPausa milissegundos no jogo.
-                Prompt.Imprimir('Infiltração congelada por ' +intervaloPausa +' milissegundos.', 'Sistema')
-                pausa = true
+        } else if ( isNaN(input) ) {
+            if ( input == 'shutdown now -p' || input == 'init 0' ) {
+                ShowIntroduction()
+            } else if ( input == 'apt-get install firewall' ) {
+                // faz uma pausa de @PauseInterval milissegundos no jogo.
+                Prompt.Imprimir('Infiltração congelada por ' +PauseInterval +' milissegundos.', 'Sistema')
+                IsPaused = true
                 
                 setTimeout(function() {
-                    pausa = false
+                    IsPaused = false
                     Prompt.Imprimir('Não é possível conter a infiltração por mais tempo!', 'Sistema')
-                }, intervaloPausa)
+                }, PauseInterval)
 
-            } else if ( _sequencia == 'apt-get moo' ) {
+            } else if ( input == 'apt-get moo' ) {
                 Prompt.Imprimir('Have you mooed today?', 'Sistema')
 
-            } else if ( _sequencia == 'whoami' ) {
-                Prompt.Imprimir( nomeUsuario, 'Sistema' )
+            } else if ( input == 'whoami' ) {
+                Prompt.Imprimir( UserName, 'Sistema' )
             }
         } else {
-            Prompt.Imprimir('Testando valor ' +_sequencia +'...')
+            Prompt.Imprimir('Testando valor ' +input +'...')
 
             // jogador pediu a interpretacao de uma razao incorreta.
-            if ( ! Invasao.verificarTermo(_sequencia) ) {
-                numErros++
+            if ( ! Invasao.verificarTermo(input) ) {
+                NumberOfMistakes++
                 Invasao.incPont('erro') // reduz pontuacao
-                Prompt.Imprimir('Erro! O termo geral não e ' +_sequencia
+                Prompt.Imprimir('Erro! O termo geral não e ' +input
                     +'. Créditos do sistema reduzidos para ' + Invasao.getPontuacao() + "!", 'Sistema') // exibe mensagem de erro
             } else { // jogador acertou a razao
-                pausa = true
+                IsPaused = true
 
                 Invasao.incPont('acerto') // incrementa pontuacao
                 Invasao.avancarFase()     // avanca de fase
@@ -165,25 +164,25 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
                     if ( dificuldade == 'normal'  )                 Conquista.Alcancar(1)
                     if ( dificuldade == 'dificil' )                 Conquista.Alcancar(2)
                     if ( dificuldade == 'sobrevivente' )            Conquista.Alcancar(3)
-                    if ( numErros == CONST.CONQUISTAS.maxNumErros ) Conquista.Alcancar(4)
-                    if ( tempo <= CONST.CONQUISTAS.maxTempo )       Conquista.Alcancar(5)
+                    if ( NumberOfMistakes == CONST.CONQUISTAS.maxNumErros ) Conquista.Alcancar(4)
+                    if ( Time <= CONST.CONQUISTAS.maxTempo )       Conquista.Alcancar(5)
                     // fim das conquistas
 
                     Invasao.incPont('vitoria')
-                    EstaJogando = false
-                    ExibirVitoria()
+                    IsPlaying = false
+                    ShowVictory()
                 } else {
-                    pausa = true
+                    IsPaused = true
                     Prompt.Imprimir('Porta fechada, a invasão foi impedida e o servidor acumulou '
                         + Invasao.getPontuacao() + " créditos!", '<span lang="en-us">Network agent</span>')
 
-                    ExibirMsgModal (
-                        'Porta fechada, a invasão de id #' + faseAtual + ' foi impedida com a inserção da razão ' + _sequencia + '!',
-                        'Invasão impedida, ' + nomeUsuario + '!'
+                    ShowModalMessage (
+                        'Porta fechada, a invasão de id #' + faseAtual + ' foi impedida com a inserção da razão ' + input + '!',
+                        'Invasão impedida, ' + UserName + '!'
                     )
 
                     $('#market-creditos').html( Invasao.getPontuacao() )
-                    Mercado.show()
+                    Market.show()
                     Email.ReceberMensagem(n >= 15 ? 'porpouco' : 'parabens')
                     
                     if ( faseAtual == CONST.PROGRESSOES[dificuldade].numeroDeProgressoes -1 )
@@ -196,34 +195,34 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
     }
 
     // define o que fazer quando o jogador integrage com o market.
-    function operarHabilidades( _habilidade, _acao ) {
+    function OperateAbilities( ability, action ) {
         var pontuacao = Invasao.getPontuacao()
 
-        if ( typeof _habilidade === 'number' ) {
-            if (CONST.HABILIDADES.nome.length <= _habilidade) return false
-            _habilidade = CONST.HABILIDADES.nome[ _habilidade ]
+        if ( typeof ability === 'number' ) {
+            if (CONST.HABILIDADES.nome.length <= ability) return false
+            ability = CONST.HABILIDADES.nome[ ability ]
         }
 
-        if ( _acao == 'comprar' ) {
-            if ( !Habilidades.podeComprar(_habilidade, pontuacao) ) {
+        if ( action == 'comprar' ) {
+            if ( !Habilidades.podeComprar(ability, pontuacao) ) {
                 Email.ReceberMensagem( 'creditosInsuf' )
                 return false
             }
 
-            Habilidades.comprar( _habilidade )
-            Invasao    .incPont( -Habilidades.obterCusto(_habilidade) )
+            Habilidades.comprar( ability )
+            Invasao    .incPont( -Habilidades.obterCusto(ability) )
 
             Email      .ReceberMensagem( 'boaCompra' )
             $('#market-creditos').html('<strong style="color:red">' +Invasao.getPontuacao() +'</strong>')
         }
-        else if ( _acao == 'utilizar' ) {
-            if ( !Habilidades.podeUtilizar(_habilidade) ) {
+        else if ( action == 'utilizar' ) {
+            if ( !Habilidades.podeUtilizar(ability) ) {
                 Email.ReceberMensagem( 'semHabRest' )
                 return false
             }
 
             // utiliza habilidade selecionada
-            eval('(' + Habilidades.utilizar(_habilidade)+'())')
+            eval('(' + Habilidades.utilizar(ability)+'())')
         }
         
         Habilidades.atualizarBotoes()
@@ -231,13 +230,13 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
     }
 
     // analisa o tempo atual e o exibe para o jogador
-    function IncRelogio() {
-        if (!EstaJogando)
+    function IncrementClock() {
+        if (!IsPlaying)
             return
 
-        if (!pausa) {
-            var tmpMin = ~~(++tempo /60),
-            tmpSeg = ~~((tempo /60 -tmpMin) *60)
+        if (!IsPaused) {
+            var tmpMin = ~~(++Time /60),
+            tmpSeg = ~~((Time /60 -tmpMin) *60)
 
             // timeStamp padrao
             tmpMin = tmpMin < 10 ? '0' +tmpMin.toString() : tmpMin.toString()
@@ -246,7 +245,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             $('#spn-tempo').html(tmpMin + ':' +tmpSeg)
         }
 
-        setTimeout(IncRelogio, 1000)
+        setTimeout(IncrementClock, 1000)
     }
 
     var clockProgressBar = 50
@@ -267,12 +266,12 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         }
     }
     function IncrementProgressBar() {
-        if (pausa) return
+        if (IsPaused) return
 
         offsetProgressBar++
         var termoN = Invasao.getTermoN()
 
-        var porcentage = Math.round(100 * offsetProgressBar * clockProgressBar / (20 * intervaloClock))
+        var porcentage = Math.round(100 * offsetProgressBar * clockProgressBar / (20 * ProgressionInterval))
 
         $('#progInvasao')    .css('width', porcentage  +'%')
         $('#lbl-progInvasao').html(porcentage + '%')
@@ -280,31 +279,31 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
     // Clock do jogo, simula a progressao temporal do jogo.
     // Quando o jogo esta em pausa, ele nao faz nada, simplesmente "progredindo" o tempo.
-    function clock() {
-        if (!EstaJogando)
+    function IncrementProgression() {
+        if (!IsPlaying)
             return
 
         // nao ha nenhum processamento quando o jogo esta pausado
         // ocorre enquanto uma mensagem ee exibida
-        if ( ! pausa ) {
+        if ( ! IsPaused ) {
             var termoN = Invasao.avancarTermoN()          
 
             Prompt.Imprimir('A(' +termoN +') = ' +Invasao.getElemProgress(), 'Monitor')
 
             var rStatus = Invasao.verificaDerrota()
             if (rStatus == 'derrota') {
-                EstaJogando = false
-                ExibirDerrota()
+                IsPlaying = false
+                ShowDefeat()
                 return
             }
             else if (rStatus == 'reset') {
                 StartProgressBar()
                 if (Invasao.getTentativa() > 0) {
-                    ExibirMsgModal('Uma invasão quase foi concretizada, mas o firewall conseguiu impedí-la a tempo. '
+                    ShowModalMessage('Uma invasão quase foi concretizada, mas o firewall conseguiu impedí-la a tempo. '
                         +'Entretanto, houve um custo alto. ele so conseguirá se manter ativo por mais algumas vezes.', 'Alerta de segurança!')
                 }
                 else {
-                    ExibirMsgModal('Oh não! Como último esforço antes de morrer, o firewall impediu que uma invasão se concretizasse. '
+                    ShowModalMessage('Oh não! Como último esforço antes de morrer, o firewall impediu que uma invasão se concretizasse. '
                         +'Tome cuidado, você agora está sozinho!', 'Alerta de segurança!')
                     Email.ReceberMensagem('raiva', 0)
                 }
@@ -312,13 +311,13 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             else if (termoN == 17)
                 Email.ReceberMensagem('cuidado')
         }
-        setTimeout(clock, intervaloClock)
+        setTimeout(IncrementProgression, ProgressionInterval)
     }
 
     // Recebe uma mensagem e um titulo, o jogo entao ee pausado e
     // uma mensagem ee exibida para o jogador
-    function ExibirMsgModal( pMsg, pTitulo ) {
-        Mercado.hide()
+    function ShowModalMessage( pMsg, pTitulo ) {
+        Market.hide()
         
         pTitulo = pTitulo || 'Você tem uma nova mensagem!'
         $('#msgModal-corpo-msg').html(pMsg)
@@ -329,18 +328,18 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
     }
 
     // Recebe como parametro uma string que faz referencia a id de uma janela do sistema operacional
-    function ExibirJanela( _janela ) {
+    function ShowWindow( _janela ) {
         if (_janela) {
-            var $janelas = $('#ih-container-os').children().not('#' +_janela)
-            $janelas.each(function() { AlternarPlano($(this), 'fundo') })
-            AlternarPlano($('#' +_janela), 'frente')
+            var $windows = $('#ih-container-os').children().not('#' +_janela)
+            $windows.each(function() { AlternatePlane($(this), 'fundo') })
+            AlternatePlane($('#' +_janela), 'frente')
 
             $('#'          +_janela).slideDown(200)
             $('#itemInic-' +_janela).fadeIn(200)
         }
         return false
     }
-    function FecharJanela( _janela ) {
+    function CloseWindow( _janela ) {
         if (_janela) {
             $('#itemInic-' +_janela).fadeOut(200)
             $('#' +_janela)			.slideUp(200)
@@ -350,7 +349,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
         return false
     }
-    function AlternarPlano( $_janela, _plano ) {
+    function AlternatePlane( $_janela, _plano ) {
         if (!$_janela) // $janela invalida, nada a ser feito.
             return false
         else {
@@ -361,7 +360,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         }
     }
 
-    function ExibirVitoria() {
+    function ShowVictory() {
         StopProgressBar()
         var conqObtidas = Conquista.getAlcancaveis('alcancados'),
             conqRestantes = Conquista.getAlcancaveis('restantes')
@@ -398,14 +397,14 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
         $('#conquistas-2').fadeIn(200)
     }
-    function ExibirDerrota() {
+    function ShowDefeat() {
         StopProgressBar()
         $('.tela')
             .css('display', 'none')
             .filter('#tela-derrota').fadeIn(200)
     }
-    function ExibirIntroducao() {
-        EstaJogando = false
+    function ShowIntroduction() {
+        IsPlaying = false
         StopProgressBar()
         
         $('#btn-login')     .addClass('disabled')
@@ -437,13 +436,13 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         Audio.pararSom  ('todos')
         Audio.iniciarSom('menu')
     }
-    function ExibirInformacoes() {
+    function ShowInformation() {
         $('.tela')
             .css('display', 'none')
             .filter('#tela-informacoes')
                 .fadeIn(200)
     }
-    function ExibirCreditos() {
+    function ShowCredits() {
         $('.tela')
             .css('display', 'none')
             .filter('#tela-creditos')
@@ -451,36 +450,34 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
     }
 
     // Configura os elementos HTML necessarios ao jogo.
-    function InitElemHTML() {
-        var $janelas = $('#ih-container-os').children()
-        Mercado      = $('#modal-mercado')
+    function InitHTML() {
+        var $windows = $('#ih-container-os').children()
+        Market      = $('#modal-mercado')
 
         // corrige altura e largura para as atuais, caso a tela seja modificada.
         $(window).on('resize', function() {
-            Tela.altura  = document.height
-            Tela.largura = document.width
 
-            $('.container').css('max-height', 0.8 * Tela.altura + 'px')
+            $('.container').css('max-height', 0.8 * document.height + 'px')
 
             // esconde elementos ocultaveis caso a tela seja pequena
             if (
                 CONST.INTERFACE.ocultarTextosEmTelasPequenas &&
-                Tela.largura < CONST.INTERFACE.tamanhoMinimoTelaAntesOcultarTextos
+                document.width < CONST.INTERFACE.tamanhoMinimoTelaAntesOcultarTextos
                )
                 $('.texto-colapsavel').hide()
             else
                 $('.texto-colapsavel').show()
         })
 
-        $('.container').css('max-height', 0.8 * Tela.altura + 'px')
+        $('.container').css('max-height', 0.8 * document.height + 'px')
 
         // bloco de notas fechado por padrao
-        FecharJanela('blocoNotas')
+        CloseWindow('blocoNotas')
 
         // caso a tela seja pequena, esconde calculadora        
-        if ( Tela.largura < CONST.INTERFACE.tamanhoMinimoTelaAntesOcultarTextos ) {
+        if ( document.width < CONST.INTERFACE.tamanhoMinimoTelaAntesOcultarTextos ) {
 
-            FecharJanela('calc')
+            CloseWindow('calc')
 
             $('#email') .css('left', '50%')
             $('#prompt').css('top', '1%')
@@ -495,37 +492,37 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
         // todas as janelas podem ser arrastadas e quando clicadas
         // serao colocadas sobre as demais.
-        $janelas.each(function() {
+        $windows.each(function() {
             // Para cada janela selecionamos o icone '.icon-remove',
             // definindo como acao deste icone o fechamento de sua respectiva janela.
             var idAtual = this.id
             $('#' +idAtual +' > h5 > span > .icon-remove').on('click', function() {
-                FecharJanela(idAtual)
+                CloseWindow(idAtual)
                 return false
             })
 
             $( this )
                 .on('mousedown', function () {
-                    $janelas.each(function() {
-                        AlternarPlano($(this), 'fundo')
+                    $windows.each(function() {
+                        AlternatePlane($(this), 'fundo')
                     })
 
-                    AlternarPlano($(this), 'frente')
+                    AlternatePlane($(this), 'frente')
                 })
                 .draggable({
                     stop: function( event, ui ) {
                         // inpedindo que as janelas sejam jogadas para fora da tela
                         // quando movimentadas utilizando o metodo draggable()
                     
-                        var janelaAtual = ui.helper,
-                        X_Atual = parseInt(ui.position.top +janelaAtual.height() /2),
-                        Y_Atual = parseInt(ui.position.left +janelaAtual.width() /2)
+                        var currentWindow = ui.helper,
+                        X_Atual = parseInt(ui.position.top +currentWindow.height() /2),
+                        Y_Atual = parseInt(ui.position.left +currentWindow.width() /2)
                     
-                        if (X_Atual > Tela.altura)
-                            $(janelaAtual).css('top', (0.9 *Tela.altura -janelaAtual.height()) +'px')
+                        if (X_Atual > document.height)
+                            $(currentWindow).css('top', (0.9 *document.height -currentWindow.height()) +'px')
 
-                        if (Y_Atual > Tela.largura)
-                            $(janelaAtual).css('left', (0.9 *Tela.largura -janelaAtual.width()) +'px')
+                        if (Y_Atual > document.width)
+                            $(currentWindow).css('left', (0.9 *document.width -currentWindow.width()) +'px')
                     }
                 })
         })
@@ -540,8 +537,8 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             })
             .data("accessButton")
             .clickOrActivate(function () {
-                var janelaAtual = this.id.split('-')[1]
-                ExibirJanela( janelaAtual )
+                var currentWindow = this.id.split('-')[1]
+                ShowWindow( currentWindow )
                 
                 return false
             })
@@ -563,7 +560,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
         // mensagem modais
         $('#msgModal').on('shown', function () {
-            pausa = true
+            IsPaused = true
             $('body').children().not('#msgModal').not('.modal-backdrop')
                 .attr({
                     'aria-hidden': true
@@ -572,7 +569,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             $('#msgModal-btn-fechar').focus()
         })
         $('#msgModal').on('hidden', function () {
-            pausa = false
+            IsPaused = false
             $('body').children().not('#msgModal').not('.modal-backdrop')
                 .attr({
                     'aria-hidden': false
@@ -625,7 +622,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .accessButton({ accessibleLabel: "Utilizar a habilidade" })
             .data("accessButton")
             .clickOrActivate(function () {
-                operarHabilidades( $(this).data('hab'), 'utilizar' )
+                OperateAbilities( $(this).data('hab'), 'utilizar' )
               
                 return false
             })
@@ -635,7 +632,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .accessButton({ accessibleLabel: 'Comprar habilidade' })
             .data("accessButton")
             .clickOrActivate(function () {
-                operarHabilidades( $(this).data('hab'), 'comprar' )
+                OperateAbilities( $(this).data('hab'), 'comprar' )
                 
                 return false
             })              
@@ -645,7 +642,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .data("accessButton")
             .clickOrActivate(function () {
                 if ( ! $(this).hasClass('disabled') )
-                    JogoInit()
+                    InitGame()
 
                 return false
             })
@@ -653,7 +650,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .accessButton({ accessibleLabel: "Exibir informações" })
             .data("accessButton")
             .clickOrActivate(function () {
-                ExibirInformacoes()
+                ShowInformation()
               
                 return false
             })
@@ -661,7 +658,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .accessButton({ accessibleLabel: "Exibir créditos" })
             .data("accessButton")
             .clickOrActivate(function () {
-                ExibirCreditos()
+                ShowCredits()
              
                 return false
             })
@@ -669,7 +666,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .accessButton({ accessibleLabel: "Voltar à introdução" })
             .data("accessButton")
             .clickOrActivate(function () {
-                ExibirIntroducao()
+                ShowIntroduction()
             
                 return false
             })
@@ -678,7 +675,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .accessButton({ accessibleLabel: "Verificar valor ou executar comando inserido acima" })
             .data("accessButton")
             .clickOrActivate(function () {
-                Interpretar($('#txt-prompt-cmd').val())
+                InterpretInput($('#txt-prompt-cmd').val())
             
                 return false
             })
@@ -692,7 +689,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         })
 
         $('#txt-prompt-cmd').on('keypress', function(event) {
-            if (event.keyCode == 13) Interpretar($(this).val())
+            if (event.keyCode == 13) InterpretInput($(this).val())
         })
 
         // atalhos da aplicacao durante o jogo (nao se aplica a menus)
@@ -701,24 +698,24 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             var tecla  = evtobj.keyCode | evtobj.which
                 tecla  = String.fromCharCode( tecla )
 
-            if ( EstaJogando && !pausa ) {
+            if ( IsPlaying && !IsPaused ) {
                 // um num foi pressionado, jogador pode estar tentando utilizar um atalho
                 if ( '1' <= tecla && '9' >= tecla ) {
-                    if ('p' == ultimaTecla) {
+                    if ('p' == LastKeyPressed) {
                         var elCount = $('#console').children().filter('.cons-msg').length;
                         
                         $('#console').children().filter('.cons-msg').eq( elCount -parseInt(tecla) ).focus()
                         $('#txt-prompt-cmd').val('')
                     
-                    } else if ( 'h' == ultimaTecla ) {
-                        operarHabilidades( tecla -49, 'utilizar' )
+                    } else if ( 'h' == LastKeyPressed ) {
+                        OperateAbilities( tecla -49, 'utilizar' )
                         lendoAtalho.habilidade = false
                         $('#txt-prompt-cmd').val('')
                     }
                 }
             }
 
-            ultimaTecla = tecla
+            LastKeyPressed = tecla
         })
 
         // configurando campos de selecao de dificuldade
