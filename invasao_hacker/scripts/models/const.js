@@ -1,15 +1,20 @@
+/**
+ * Modulo contem todas as constantes utilizadas durante o jogo.
+ *
+ */
+
 define( function() {
-    // objeto contem todas as constantes utilizadas a execucao do codigo
-    var CONST = {
+    
+    return {
         INTERFACE: {
             ocultarTextosEmTelasPequenas: true,
             tamanhoMinimoTelaAntesOcultarTextos: 1024
         },
         JOGO: {
-            intervaloClockFacil:        2000,
-            intervaloClockNormal:       1500,
-            intervaloClockDificil:      1000,
-            intervaloClockSobrevivente: 1500,
+            intervaloClockFacil:        3000,
+            intervaloClockNormal:       1000,
+            intervaloClockDificil:       250,
+            intervaloClockSobrevivente:  250,
             intervaloPausa:             5000,
             numVezesMercadoApar:            2
         },
@@ -50,7 +55,7 @@ define( function() {
         EMAIL: {
             MSG: {
                 bemvindo:      'Ei!!! Você está aqui! Acho que agora nós podemos ganhar!',
-                boaCompra:     'Ótima compra! acho que podemos ganhar agora!',
+                boaCompra:     'Ótima compra! Isso com certeza nos ajudará!',
                 creditosInsuf: 'Sinto muito amigão, mas você está sem créditos pra fazer essa compra.',
                 semHabRest:    'Essa habilidade não pode mais ser utilizada, compre-a no mercado.',
                 naoPdUtilAb:   'Você não tem essa abilidadade! Compre-a na próxima vez que ver o Mercado!',
@@ -99,6 +104,4 @@ define( function() {
             ]
         }
     }
-
-    return CONST
 })
