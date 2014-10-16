@@ -8,23 +8,23 @@ define(['jquery', './const'], function($, CONST) {
     var Conquista = {
         alcancaveis:[
         {
-            titulo: 'Iniciante menos iniciante.', 
-            descricao: 'Vença o modo iniciante.', 
+            titulo: 'Usuário iniciante.', 
+            descricao: 'Vença o modo \'Noob\'.', 
             atingido: false
         },
 {
             titulo: 'Usuário experiente!', 
-            descricao: 'Vença o modo normal.',
+            descricao: 'Vença o modo \'Aprendiz\'.',
             atingido: false
         },
 {
             titulo: 'Administrador imbatível.',
-            descricao: 'Vença o modo difícil.',
+            descricao: 'Vença o modo \'Expert\'.',
             atingido: false
         },
 {
             titulo: 'Por que você não dedica algum tempo de sua vida para dormir?',
-            descricao: 'Reset o jogo no modo sobrevivente.',
+            descricao: 'Reset o jogo no modo \'White Hat\'.',
             atingido: false
         },
 {
