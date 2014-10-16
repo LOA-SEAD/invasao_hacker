@@ -15,12 +15,12 @@ define(['jquery'], function($) {
         ]
     }
     
-    function privReiniciar() {
+    function privReiniciar(pUserName) {
         Prompt.id = 2;
 
         $('#console').html(
             '<span class="ConsNomeUsuario" aria-hidden="true" id="console-item-0">Sistema: </span> Tentando logar...<br />'+
-            '<span class="ConsNomeUsuario" aria-hidden="true" id="console-item-1">Sistema: </span> Usuário confirmado. Logado como Administrador!<br />'
+            '<span class="ConsNomeUsuario" aria-hidden="true" id="console-item-1">Sistema: </span> Usuário confirmado. Logado como ' + pUserName +'!<br />'
         )
 
         $('#txt-prompt-cmd').val('') // Inicializa input do prompt

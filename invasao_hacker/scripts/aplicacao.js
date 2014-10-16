@@ -53,24 +53,24 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             .fadeIn(200)
 
         if ( Difficulty == 'facil' ) {
-            UserName = 'Iniciante'
+            UserName = 'Noob'
             ProgressionInterval = CONST.JOGO.intervaloClockFacil
         } else if ( Difficulty == 'normal' || !Difficulty ) {
             Difficulty = 'normal'
-            UserName = 'Usuário'
+            UserName = 'Aprendiz'
             ProgressionInterval = CONST.JOGO.intervaloClockNormal
         } else if ( Difficulty == 'dificil' ) {
-            UserName = 'Administrador'
+            UserName = 'Expert'
             ProgressionInterval = CONST.JOGO.intervaloClockDificil
         } else if ( Difficulty == 'sobrevivente' ) {
-            UserName = 'Sobrevivente'
+            UserName = 'White Hat'
             ProgressionInterval = CONST.JOGO.intervaloClockSobrevivente
         }
 
         // writes down the name of user on the start menu
         $('#nome-usr-logado').html( UserName )
 
-        Prompt     .Reiniciar()
+        Prompt     .Reiniciar(UserName)
         Email      .Reiniciar()
         //Conquista  .Reiniciar() // Quando comentado, conquistas nunca se perdem.
         //Habilidades.Reiniciar() // Quando comentado, habilidades nunca se perdem.
