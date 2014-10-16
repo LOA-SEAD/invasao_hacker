@@ -25,10 +25,7 @@ define(['jquery', './const'], function ( $, CONST ) {
         // numero invalido
         if(numeroDeProgressoes < 1 || isNaN(numeroDeProgressoes)) 
             numeroDeProgressoes = 10
-
-        /* if (dificuldade == 'sobrevivente')
-            numeroDeProgressoes = CONST.PROG.numProgSobrevivente */
-        
+ 
         while(numeroDeProgressoes--)
         {
             tipo  =    Math.random()
