@@ -26,8 +26,8 @@ define(['jquery', './const'], function ( $, CONST ) {
         if(numeroDeProgressoes < 1 || isNaN(numeroDeProgressoes)) 
             numeroDeProgressoes = 10
 
-        if (dificuldade == 'sobrevivente')
-            numeroDeProgressoes = CONST.PROG.numProgSobrevivente
+        /* if (dificuldade == 'sobrevivente')
+            numeroDeProgressoes = CONST.PROG.numProgSobrevivente */
         
         while(numeroDeProgressoes--)
         {

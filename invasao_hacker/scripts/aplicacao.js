@@ -718,7 +718,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
         // difines application shorcuts usable throughout the game
         $(document).on('keypress', function( event ) {
-            var evtobj = window.event ? event : e
+            var evtobj = event
             var key  = evtobj.keyCode | evtobj.which
                 key  = String.fromCharCode( key )
 
