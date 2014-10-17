@@ -14,7 +14,7 @@ define(['jquery', './const'], function($, CONST) {
         },
 {
             titulo: 'Usuário experiente!', 
-            descricao: 'Vença o modo \'Aprendiz\'.',
+            descricao: 'Vença o modo \'Junior\'.',
             atingido: false
         },
 {
@@ -24,7 +24,7 @@ define(['jquery', './const'], function($, CONST) {
         },
 {
             titulo: 'Por que você não dedica algum tempo de sua vida para dormir?',
-            descricao: 'Reset o jogo no modo \'White Hat\'.',
+            descricao: 'Vença o modo \'White Hat\'.',
             atingido: false
         },
 {

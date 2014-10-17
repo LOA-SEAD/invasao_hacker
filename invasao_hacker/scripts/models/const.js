@@ -38,7 +38,7 @@ define( function() {
                 razaoMaxima:         10,
             },
             sobrevivente: {
-                numeroDeProgressoes: 1000,
+                numeroDeProgressoes:   20,
                 probabilidadePa:       .5,
                 razaoMaxima:           10,
             },

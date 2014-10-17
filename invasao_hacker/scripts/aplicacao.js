@@ -57,7 +57,7 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             ProgressionInterval = CONST.JOGO.intervaloClockFacil
         } else if ( Difficulty == 'normal' || !Difficulty ) {
             Difficulty = 'normal'
-            UserName = 'Aprendiz'
+            UserName = 'Junior'
             ProgressionInterval = CONST.JOGO.intervaloClockNormal
         } else if ( Difficulty == 'dificil' ) {
             UserName = 'Expert'
