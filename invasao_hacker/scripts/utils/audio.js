@@ -1,4 +1,4 @@
-﻿define(['jquery', 'jquery.accessWidgetToolkit.AccessButton'], function ( $ ) {
+define(['jquery', 'jquery.accessWidgetToolkit.AccessButton'], function ( $ ) {
 
     var $controles,
         $btnTrocarMudo,
@@ -14,9 +14,36 @@
         },
         acerto: {
             arquivo: 'invasao_hacker/audio/acerto',
+            repetir: false,
         },
         erro: {
             arquivo: 'invasao_hacker/audio/erro',
+            repetir: false,
+        },
+        prompt_notification: {
+            arquivo: 'invasao_hacker/audio/prompt_notification',
+            repetir: false,
+
+        },
+        falha: {
+            arquivo: 'invasao_hacker/audio/falha',
+            repetir: false,
+
+        },
+        derrota: {
+            arquivo: 'invasao_hacker/audio/derrota',
+            repetir: false,
+
+        },
+        erro_upgrade: {
+            arquivo: 'invasao_hacker/audio/erro_upgrade',
+            repetir: false,
+
+        },
+        upgrade: {
+            arquivo: 'invasao_hacker/audio/upgrade',
+            repetir: false,
+
         },
     }
     

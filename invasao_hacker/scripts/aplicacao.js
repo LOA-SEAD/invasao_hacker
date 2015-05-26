@@ -149,12 +149,14 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
             // jogador pediu a interpretacao de uma razao incorreta.
             if ( ! Invasao.verificarTermo(input) ) {
                 NumberOfMistakes++
+                Audio.iniciarSom('erro')
                 Invasao.incPont('erro') // reduz pontuacao
                 Prompt.Imprimir('Erro! O termo geral não e ' +input
                     +'. Créditos do sistema reduzidos para ' + Invasao.getPontuacao() + "!", 'Sistema') // exibe mensagem de erro
             } else { // jogador acertou a razao
                 IsPaused = true
 
+                Audio.iniciarSom('acerto')
                 Invasao.incPont('acerto') // incrementa pontuacao
                 Invasao.avancarFase()     // avanca de fase
                 StartProgressBar()
@@ -208,10 +210,11 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
 
         if ( action == 'comprar' ) {
             if ( !Habilidades.podeComprar(ability, pontuacao) ) {
+                Audio.iniciarSom('erro_upgrade')
                 Email.ReceberMensagem( 'creditosInsuf' )
                 return false
             }
-
+            Audio.iniciarSom('upgrade')
             Habilidades.comprar( ability )
             Invasao    .incPont( -Habilidades.obterCusto(ability) )
 
@@ -295,16 +298,20 @@ function ( $, jul, Audio, Anima, CONST, Invasao, Calculadora, Email, Prompt, Hab
         if ( ! IsPaused ) {
             var termoN = Invasao.avancarTermoN()          
 
+            
             Prompt.Imprimir('A(' +termoN +') = ' +Invasao.getElemProgress(), 'Monitor')
+            Audio.iniciarSom('prompt_notification')
 
             var rStatus = Invasao.verificaDerrota()
             if (rStatus == 'derrota') {
                 IsPlaying = false
+                Audio.iniciarSom('derrota')
                 ShowDefeat()
                 return
             }
             else if (rStatus == 'reset') {
                 StartProgressBar()
+                Audio.iniciarSom('falha')
                 if (Invasao.getTentativa() > 0) {
                     ShowModalMessage('Uma invasão quase foi concretizada, mas o firewall conseguiu impedí-la a tempo. '
                         +'Entretanto, houve um custo alto. ele so conseguirá se manter ativo por mais algumas vezes.', 'Alerta de segurança!')
